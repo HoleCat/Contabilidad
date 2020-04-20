@@ -1,0 +1,58 @@
+.nav-index {
+    z-index: 20;
+}
+
+.side-bar-show {
+    bottom: 70px;
+    left: 14px;
+    width: 160px;
+    margin-left: 0px;
+    transition: ease-out 1s;
+    z-index: 19;
+}
+
+.side-bar-hide {
+    bottom: 70px;
+    left: 14px;
+    width: 160px;
+    margin-left: -180px;
+    transition: ease-out 1s;
+    z-index: 19;
+}
+
+.options-bar-show {
+    bottom: 70px;
+    right: 24px;
+    width: 40px;
+    margin-right: 0px;
+    transition: ease-out 1s;
+    z-index: 19;
+}
+
+.options-bar-hide {
+    bottom: 70px;
+    right: 24px;
+    width: 0px;
+    margin-right: -180px;
+    transition: ease-out 1s;
+    z-index: 19;
+}
+
+.btn-tools {
+    bottom: 10px;
+    left: 14px;
+    width: 40px;
+    z-index: 19;
+}
+
+.btn-options {
+    bottom: 10px;
+    right: 14px;
+    width: 40px;
+    z-index: 19;
+}
+
+.options-link {
+    width: 40px;
+    z-index: 19;
+}
