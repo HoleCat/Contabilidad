@@ -56,7 +56,7 @@
                         </div>
                     </div>
                     <div class="col-12 text-center py-3 px-0">
-                        <input type="submit" value="ACEPTAR">
+                        <input class="btn btn-success" type="submit" value="ACEPTAR">
                     </div>
                 </div>
             </form>

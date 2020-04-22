@@ -30,6 +30,10 @@
                         </select>
                     </div>
                     <div class="col-6 py-1 px-1">
+                        <label for="">CANTIDAD DE REGISTOS</label>
+                        <input class="form-control" type="number" name="cantidad">
+                    </div>
+                    <div class="col-6 py-1 px-1">
                         <label for="">IMPORTE MINIMO</label>
                         <input class="form-control" type="number" name="importeminimo">
                     </div>
@@ -41,7 +45,7 @@
                         <label for="">TIPO DE COMPROBANTE</label>
                         <select class="custom-select" name="tipocomprobante">
                             @foreach ($comprobantes as $comprobante)
-                            <option value="{{ $comprobante->codigo }}">{{ $comprobante->descripcion }}</option>
+                            <option value="{{ $comprobante->codigo }}">{{ $comprobante->codigo }} {{ $comprobante->descripcion }}</option>
                             @endforeach
                         </select>
                     </div>

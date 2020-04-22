@@ -4,18 +4,24 @@ namespace App\Imports;
 
 use App\Mayorventa;
 use Maatwebsite\Excel\Concerns\ToModel;
+use Maatwebsite\Excel\Concerns\WithStartRow;
 
-class MayorventasImport implements ToModel
+class MayorventasImport implements ToModel, WithStartRow
 {
     /**
     * @param array $row
     *
     * @return \Illuminate\Database\Eloquent\Model|null
     */
+    public function startRow(): int
+    {
+        return 2;
+    }
+
     public function model(array $row)
     {
         return new Mayorventa([
-            'IdMuestreo'=>$row[0],
+            'IdUso'=>$row[0],
             'IdArchivo'=>$row[1],
             'Periodo'=> $row[2],
             'Correlativo'=> $row[3],

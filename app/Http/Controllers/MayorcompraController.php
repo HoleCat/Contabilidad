@@ -165,6 +165,7 @@ class MayorcompraController extends Controller
             $impMax = $request->input('importemaximo');
             $comparacion = $request->input('comparacion');
             $tipo = $request->input('tipocomprobante');
+            $cantidad = $request->input('cantidad');
             //$reporte = DB::select('call report_xl_compras(?, ?, ?, ?, ?, ?)',[$impMin,$impMax,$comparacion,$tipo,$id_archivo,$uso_id]);
             return response()->json($json_data,200);
         } else {
@@ -188,7 +189,8 @@ class MayorcompraController extends Controller
                 $impMax = $request->input('importemaximo');
                 $comparacion = $request->input('comparacion');
                 $tipo = $request->input('tipocomprobante');
-                $reporte = DB::select('call report_xl_compras(?, ?, ?, ?, ?, ?)',[$impMin,$impMax,$comparacion,$tipo,$id_archivo,$uso_id]);
+                $cantidad = $request->input('cantidad');
+                $reporte = DB::select('call report_xl_compras(?, ?, ?, ?, ?, ?, ?)',[$impMin,$impMax,$cantidad,$comparacion,$tipo,$uso_id,$id_archivo]);
                 
                 session(['datacompras' => $reporte]);
 

@@ -15,6 +15,15 @@ class Almacenamiento extends Model
         return $ruta;
     }
 
+    static function guardarmuestrasventas($username,$file) {
+        $filenamewithext = $file->getClientOriginalName();
+        $filename = pathinfo($filenamewithext, PATHINFO_FILENAME);
+        $ext = $file->getClientOriginalExtension();
+        $filenametostore = $filename.'_'.time().'.'.$ext;
+        $ruta = $file->move('storage/muestreo/ventas/'.$username.'/'.time().'_'.$filenametostore.'/archivo/', $filenametostore);
+        return $ruta;
+    }
+
     static function guardaractivos($username,$file) {
         $filenamewithext = $file->getClientOriginalName();
         $filename = pathinfo($filenamewithext, PATHINFO_FILENAME);

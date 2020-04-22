@@ -333,7 +333,7 @@ Route::get('/Muestreo/Ventas', function () {
 
 Route::match(['get', 'post'], '/ImportExcelCompra', 'MayorcompraController@import');
 Route::match(['get', 'post'], '/ExportExcelCompra', 'MayorcompraController@export');
-Route::match(['get', 'post'], '/ImportExcelVenta', 'MayorventaController@import');
+Route::match(['get', 'post'], '/ImportExcelVentas', 'MayorventaController@import');
 Route::match(['get', 'post'], '/ImportExcelGasto', 'MayorgastoController@import');
 Route::match(['get', 'post'], '/ImportExcelActivo', 'ActivofijoController@import');
 Auth::routes();

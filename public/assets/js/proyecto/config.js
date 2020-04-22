@@ -125,15 +125,13 @@ function validarsunat(input,msg,valor) {
                 if(respuesta.classList.contains('text-danger')){
                     respuesta.classList.remove('text-danger');
                     dato.classList.remove('border-danger');
-                    respuesta.classList.remove('text-primary');
-                    dato.classList.remove('border-primary');
                     respuesta.classList.add('text-primary');
                     dato.classList.add('border-primary');
                 } else {
-                    respuesta.classList.remove('text-primary');
-                    dato.classList.remove('border-primary');
                     respuesta.classList.add('text-primary');
                     dato.classList.add('border-primary');
+                    respuesta.classList.remove('text-danger');
+                    dato.classList.remove('border-danger');
                 }
                 if(respuesta.classList.contains('fade'))
                 {
@@ -141,16 +139,14 @@ function validarsunat(input,msg,valor) {
                 }
             } else {
                 respuesta.innerHTML = data.message;
-                if(respuesta.classList.contains('text-danger')){
+                if(!respuesta.classList.contains('text-danger')){
                     respuesta.classList.add('text-danger');
                     dato.classList.add('border-danger');
-                    respuesta.classList.add('text-primary');
-                    dato.classList.add('border-primary');
                     respuesta.classList.remove('text-primary');
                     dato.classList.remove('border-primary');
                 } else {
-                    respuesta.classList.add('text-primary');
-                    dato.classList.add('border-primary');
+                    respuesta.classList.add('text-danger');
+                    dato.classList.add('border-danger');
                     respuesta.classList.remove('text-primary');
                     dato.classList.remove('border-primary');
                 }
@@ -168,8 +164,8 @@ function validarsunat(input,msg,valor) {
     });
 }
 
-function validartipodecambio(input) {
-    var fecha = document.querySelector(input);
+function validartipodecambio(input,contenedor) {
+    var fecha = document.querySelector(input).value;
     var campos = fecha.split('.');
     var mes = '';
     var anio = '';
@@ -191,6 +187,14 @@ function validartipodecambio(input) {
             {
                 anio = campos[3];
             }
+        } else {
+            campos = fecha.split('-');
+            mes = campos[1];
+            anio = campos[0];
+            if(anio.length < 3)
+            {
+                anio = campos[3];
+            }
         }
     }
 
@@ -205,11 +209,81 @@ function validartipodecambio(input) {
 		processData: false,
         contentType: false,
         success: function(data){
-            console.log(data)
+            console.log(data);
+            data = JSON.parse(data);
+            console.log(data);
+            if(data.success === true)
+            {
+                var registros = data.result;
+                for (let index = 0; index < registros.length; index++) {
+                    const element = registros[index];
+                    if(index == registros.length - 1)
+                    {
+                        let con = document.querySelector(contenedor);
+                        con.innerHTML = 'COMPRA : '+registros[index].compra + 'VENTA : '+registros[index].venta;
+                    }
+                }
+            }
         }
     }).done(function(){
 		
 	});
+}
+
+function validarcomprobantes(input,valor) {
+    let ruc = document.querySelector(input).value;
+    //let dato = document.querySelector(input);
+    //let respuesta = document.querySelector(msg);
+    let formData = new FormData();
+    var resultado = false;
+    formData.set('nruc', ruc);
+    $.ajax({
+		url: 'http://sunat.innovafashionperu.com/cpeServices.php',
+		type: 'POST',
+		data: formData,
+		processData: false,
+        contentType: false,
+        success: function(data){
+            console.log(data);
+            data = JSON.parse(data);
+            if(data.success == true){
+                resultado = true;
+                let respuesta = 'condicion :' + 'encontrado';
+                $('#modal-comprobantes').modal('show');
+                $('#modal-comprobantes-titulo').html(respuesta);
+                var html = '<ul class="list-group">';
+                var tipos = data.result;
+                
+                    
+                    tipos.forEach(tipo => {
+                        const fecha = tipo.fecha;
+                        html += '<li class="list-group-item">';
+                        html += fecha;
+                        html += '</li>';
+                        const comprobantes = tipo.comprobantes;
+                        for (let index = 0; index < comprobantes.length; index++) {
+                            const element = comprobantes[index];
+                            html += '<li class="list-group-item">';
+                            html += element;
+                            html += '</li>';
+                        }
+                    });
+                
+                html += '</ul>';
+                $('#modal-comprobantes .modal-body').html(html);
+            } else {
+                resultado = false;
+                let respuesta = 'condicion :' + 'sin data';
+                $('#modal-comprobantes').modal('show');
+                $('#modal-comprobantes-titulo').html(respuesta);
+            }        
+        }
+    }).done(function(){
+        if(valor){
+            valor = resultado;
+        }
+		return resultado;
+    });
 }
 
 function confirmacionpopup(titulo,contenido,botones) {

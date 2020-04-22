@@ -30,6 +30,10 @@
                         </select>
                     </div>
                     <div class="col-6 py-1 px-1">
+                        <label for="">CANTIDAD DE REGISTOS</label>
+                        <input class="form-control" type="number" name="cantidad">
+                    </div>
+                    <div class="col-6 py-1 px-1">
                         <label for="">IMPORTE MINIMO</label>
                         <input class="form-control" type="number" name="importeminimo">
                     </div>

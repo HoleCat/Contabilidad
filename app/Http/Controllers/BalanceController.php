@@ -220,7 +220,7 @@ class BalanceController extends Controller
                 ->setCellValue($BG_col."46", $sum_revisar)
                 ->setCellValue($BG_col."47", $sum_cuentas_por_pagar)
                 ->setCellValue($BG_col."49", $sum_intercompany_por_pagar)
-                ->setCellValue($BG_col."56", "=sum(".$BG_col."45:".$BG_col."49)");
+                ->setCellValue($BG_col."53", "=sum(".$BG_col."45:".$BG_col."49)");
 
             $sum_obligaciones_financieras = Txtexportaciones::sumIf($yr, $array_data, "OBLIGACIONES FINANCIERAS");
             $sum_activo_diferido = Txtexportaciones::sumIf($yr, $array_data, "ACTIVO DIFERIDO");
@@ -234,7 +234,7 @@ class BalanceController extends Controller
                 ->setCellValue($BG_col."66", $sum_patrimonio);
 
             $spreadsheet->setActiveSheetIndex(0)
-                ->setCellValue($BG_col."67", "\$PL.".$PL_col."25")
+                ->setCellValue($BG_col."67", "=-PL!".$PL_col."25")
                 ->setCellValue($BG_col."68", "=sum(".$BG_col."66:".$BG_col."67)")
                 ->setCellValue($BG_col."71", "=+".$BG_col."53+".$BG_col."62+".$BG_col."68");
 

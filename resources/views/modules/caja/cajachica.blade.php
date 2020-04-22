@@ -10,8 +10,8 @@
                 <div class="col-12 d-flex flex-wrap px-0">
                     <div class="col-xl-4 col-md-4 col-sm-6 col-xs-12 px-1">
                         <div class="form-group my-0">
-                            <label>RUC <button onclick="validarsunat('#ruccajachica','#validador-ruc')" class="btn btn-primary"><i class="fas fa-user-secret"></i></button></label>
-                            <input oninput="validacionunitariabasica('#ruccajachica','#validador-ruc',8,12)" id="ruccajachica" name="ruc" class="form-control" type="number">
+                            <label>RUC |<a onclick="validarsunat('#ruccajachica','#validador-ruc')" class="btn btn-primary"><i class="fas fa-user-secret"></i></a>|<a onclick="validarcomprobantes('#ruccajachica','')" class="btn btn-warning"><i class="fab fa-audible"></i></a></label>
+                            <input oninput="validacionunitariabasica('#ruccajachica','#validador-ruc',8,15)" id="ruccajachica" name="ruc" class="form-control" type="number">
                             <small id="validador-ruc" class="text-danger fade">Campo obligatorio</small>
                         </div>
                         <div class="form-group my-0">
@@ -38,14 +38,14 @@
                         </div>
                         <div class="form-group my-0">
                             <label>FECHA</label>
-                            <input name="fecha" class="form-control" type="date">
+                            <input id="fechacajachica" name="fecha" class="form-control" type="date">
                             <small class="text-danger fade">Campo obligatorio</small>
                         </div>
                     </div>
                     <div class="col-xl-4 col-md-4 col-sm-6 col-xs-12 px-1">
                         <div class="form-group my-0">
-                            <label>MONEDA</label>
-                            <select name="moneda" class="custom-select">
+                            <label>MONEDA <a id="tipocambiocajachica" class="btn btn-success">VALOR : 0.0</a></label>
+                            <select onchange="validartipodecambio('#fechacajachica','#tipocambiocajachica')" name="moneda" class="custom-select">
                                 <option selected>seleccione..</option>
                                 @foreach ($monedas as $monedas)
                                 <option value="{{ $monedas->id }}">{{ $monedas->descripcion }}</option>
@@ -98,6 +98,24 @@
                     </div>
                 </div>
             </form>
+        </div>
+        <div class="modal fade" id="modal-comprobantes" tabindex="-1" role="dialog" aria-labelledby="modal-comprobantes-titulo" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modal-comprobantes-titulo">Modal title</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    ...
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">OK</button>
+                </div>
+                </div>
+            </div>
         </div>
         <div id="divtablacajachica" class="col-12">
             

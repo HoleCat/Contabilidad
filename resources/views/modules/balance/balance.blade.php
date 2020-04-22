@@ -30,13 +30,11 @@
                 <input type="submit" class="btn btn-success">
             </form>
         </div>
-
         <div class="row">
             <div class="col-12" id="divbalancetable">
             
             </div>    
         </div>
-
         <script type="text/javascript" src="{{ asset('assets/js/proyecto/balance/balance.js')}}"></script>
     </div>
 </div>

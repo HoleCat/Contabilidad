@@ -3,8 +3,10 @@
 namespace App\Imports;
 
 use App\Clases\Activos\Activofijo;
+use App\Formatos\Excelmuestreo;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithStartRow;
+use PhpOffice\PhpSpreadsheet\Shared\Date;
 
 class ActivofijosImport implements ToModel, WithStartRow
 {
@@ -20,7 +22,11 @@ class ActivofijosImport implements ToModel, WithStartRow
     }
     
     public function model(array $row)
-    {
+    {   echo $row[17].','.$row[18].','.$row[33];
+        $fecha1 = date_format(Date::excelToDateTimeObject($row[17]), 'd-m-Y');
+        $fecha2 = date_format(Date::excelToDateTimeObject($row[18]), 'd-m-Y');
+        $fecha3 = date_format(Date::excelToDateTimeObject($row[33]), 'd-m-Y');
+
         return new ActivoFijo([
             'IdUso'=> $row[0],
             'IdArchivo'=> $row[1],
@@ -39,8 +45,8 @@ class ActivofijosImport implements ToModel, WithStartRow
             'AjusteInflacion'=> $row[14],
             'ValorAjustado'=> $row[15],
             'CostoNetoIni'=> $row[16],
-            'FecAdquisicion'=> $row[17],
-            'FecInicio'=> $row[18],
+            'FecAdquisicion'=> $fecha1,
+            'FecInicio'=> $fecha2,
             'Metodo'=> $row[19],
             'NroDoc'=> $row[20],
             'PorcDepreciacion'=> $row[21],
@@ -55,7 +61,7 @@ class ActivofijosImport implements ToModel, WithStartRow
             'DepreAcuTributaria'=> $row[30],
             'CostoNetoIniTributaria'=> $row[31],
             'DepreEjercicioTributaria'=> $row[32],
-            'FecBaja'=> $row[33],
+            'FecBaja'=> $fecha3,
         ]);
     }
 }

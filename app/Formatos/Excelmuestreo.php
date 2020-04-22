@@ -3,11 +3,13 @@
 namespace App\Formatos;
 
 use App\Clases\Almacenamiento;
+use Carbon\Carbon;
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Shared\Date;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
@@ -53,6 +55,43 @@ class Excelmuestreo extends Model
         }else{
             echo "ERROR.";
         }
+    }
+
+    static function transformDateTime(string $value, string $format = 'Y-m-d')
+    {
+        $date = "";
+        $datos = explode("-", $value);
+        if(sizeof($datos)>1)
+        {
+            if(strlen($datos[0])>3){
+                $date = $datos[0].'-'.$datos[1].'-'.$datos[2];
+            } else {
+                $date = $datos[2].'-'.$datos[1].'-'.$datos[0];
+            }
+        } else {
+            $datos = explode("/", $value);
+            if(strlen($datos[0])>3){
+                $date = $datos[0].'-'.$datos[1].'-'.$datos[2];
+            } else {
+                $date = $datos[2].'-'.$datos[1].'-'.$datos[0];
+            }
+        }
+        if(sizeof($datos)>1){
+            if(strlen($datos[0])>3){
+                $date = $datos[0].'-'.$datos[1].'-'.$datos[2];
+            } else {
+                $date = $datos[2].'-'.$datos[1].'-'.$datos[0];
+            }
+        } else {
+            $datos = explode(".", $value);
+            if(strlen($datos[0])>3){
+                $date = $datos[0].'-'.$datos[1].'-'.$datos[2];
+            } else {
+                $date = $datos[2].'-'.$datos[1].'-'.$datos[0];
+            }
+        }
+        echo $date;
+        return $date;
     }
 
     static function downloadExcel($json_data,$cell_order,$template_path) {
