@@ -23,6 +23,9 @@ use Illuminate\Support\Facades\DB;
 | contains the "web" middleware group. Now create something great!
 |
 */
+Route::post('/borrarcochinada', function () {
+    DB::table('activofijos')->delete();
+});
 
 Route::get('/', function () {
     return view('welcome');

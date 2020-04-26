@@ -29,21 +29,22 @@
                         <label for="">CANTIDAD DE REGISTOS</label>
                         <input class="form-control" type="number" name="cantidad">
                     </div>
-                    <div class="col-6 py-1 px-1">
+                    <div class="d-none col-6 py-1 px-1">
                         <label for="">FECHA INICIAL</label>
                         <input class="form-control" type="date" name="fechainicial">
                     </div>
                     <div class="col-6 py-1 px-1">
-                        <label for="">FECHA FINAL</label>
+                        <label for="">FECHA DE REVISION</label>
                         <input class="form-control" type="date" name="fechafin">
                     </div>
-                    <div class="custom-control custom-checkbox">
+                    <div class="d-none custom-control custom-checkbox">
                         <input type="checkbox" class="custom-control-input" name="flag" id="activosflag">
                         <label class="custom-control-label" for="activosflag">Filtrar data actual</label>
                     </div>
                 </div>
                 <input type="submit" class="btn btn-success">
             </form>
+            <a class="btn btn-danger" onclick="ejecutarruta('/borrarcochinada')">BORRAR INFO ANTERIOR</a>
         </div>
         <div class="row">
             <div class="col-12" id="divactivostable">
