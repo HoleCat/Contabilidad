@@ -55,56 +55,47 @@ function exportarmayoractivos() {
 		
 	});
 }
- 
+
 var cabeceraactivos = [
-    'id',
-    'IdUso',
-    'IdArchivo',
-    'Codigo',
-    'CuentaContable',
-    'Descipcion',
-    'Marca',
-    'Modelo',
-    'NumeroSeriePlaca',
-    'CostoFin',
-    'Adquisicion',
-    'Mejoras',
-    'RetirosBajas',
-    'Otros',
-    'ValorHistorico',
-    'AjusteInflacion',
-    'ValorAjustado',
-    'CostoNetoIni',
-    'FecAdquisicion',
-    'FecInicio',
-    'Metodo',
-    'NroDoc',
-    'PorcDepreciacion',
-    'DepreAcumulada',
-    'DepreEjercicio',
-    'DepreRelacionada',
-    'DepreOtros',
-    'DepreHistorico',
-    'DepreAjusInflacion',
-    'DepreAcuInflacion',
-    'CostoHistorico',
-    'DepreAcuTributaria',
-    'CostoNetoIniTributaria',
-    'DepreEjercicioTributaria',
-    'FecBaja',
-    'FecAdquisicion',
-    'procentaje',
-    'meses_util',
-    'DispMes',
-    'DispMes_Cal',
-    'diferencia_meses',
-    'diferencia_meses_cal',
-    'diferencia_dias',
-    'depAnul',
-    'depMensual',
-    'depDiara',
-    'depActual',
-    'depActualDays'
-];
+    'id'
+    ,'IdUso'
+    ,'IdArchivo'
+    ,'Codigo'
+    ,'CuentaContable'
+    ,'Descipcion'
+    ,'Marca'
+    ,'Modelo'
+    ,'NumeroSeriePlaca'
+    ,'CostoFin'
+    ,'Adquisicion'
+    ,'Mejoras'
+    ,'RetirosBajas'
+    ,'Otros'
+    ,'ValorHistorico'
+    ,'AjusteInflacion'
+    ,'ValorAjustado'
+    ,'CostoNetoIni'
+    ,'FecAdquisicion'
+    ,'FecInicio'
+    ,'Metodo'
+    ,'NroDoc'
+    ,'PorcDepreciacion'
+    ,'DepreAcumulada'
+    ,'DepreEjercicio'
+    ,'DepreRelacionada'
+    ,'DepreOtros'
+    ,'DepreHistorico'
+    ,'DepreAjusInflacion'
+    ,'DepreAcuInflacion'
+    ,'CostoHistorico'
+    ,'DepreAcuTributaria'
+    ,'CostoNetoIniTributaria'
+    ,'DepreEjercicioTributaria'
+    ,'FecBaja'
+    ,'created_at'
+    ,'updated_at'
+    ,'RATIO'
+    ,'DEPRESIACION'    
+]
 
 

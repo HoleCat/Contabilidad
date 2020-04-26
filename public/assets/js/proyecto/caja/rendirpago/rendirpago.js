@@ -10,10 +10,11 @@ var rendirpago = {
 
 var datarendirpago;
 
-var cabecerarendirpago = [
+var cabeceracajachicha = [
     'liquidacion_id'
     ,'ruc'
     ,'tipodocumento'
+    ,'codigodocumento'
     ,'documento'
     ,'fecha'
     ,'moneda'
@@ -25,7 +26,7 @@ var cabecerarendirpago = [
     ,'monto'
 ];
 
-var identificador = 0;
+var identificadorrendirpago = 0;
 
 var botonesrendirpago = [
 	{
@@ -83,9 +84,9 @@ function ejecutarvalidacionrendirpago() {
         }
         console.log('termino');
         eso.push(sunat);
-        eso.push(validacionunitariabasica('#rucrendirpago','#rp-validador-ruc',8,12));
-        eso.push(validacionunitariabasica('#codigodocumentorendirpago','#rp-validador-nrodocumento',3,5));
-        eso.push(validacionunitariabasica('#numerodocumentorendirpago','#rp-validador-nrodocumento',3,5));
+        eso.push(validacionunitariabasica('#rucrendirpago','#validador-ruc',8,12));
+        eso.push(validacionunitariabasica('#codigodocumentorendirpago','#validador-nrodocumento',3,5));
+        eso.push(validacionunitariabasica('#numerodocumentorendirpago','#validador-nrodocumento',3,5));
         console.log(eso);
         for (let index = 0; index < eso.length; index++) {
             const element = eso[index];
@@ -102,6 +103,6 @@ function optenertotales() {
 }
 
 $(function(){
-    creartablavalidada(ejecutarvalidacionrendirpago,'table table-responsive','tablarendirpago','#formrendirpago','#divtablarendirpago','/Caja/Rendirpago/Adicion',cabecerarendirpago,true,optenertotales,botonesrendirpago,identificador);
-    creartablaahora(parametrosrendirpago,'table table-responsive','tablarendirpago','#divtablarendirpago','/Caja/Rendirpago/Info',cabecerarendirpago,true,optenertotales,botonesrendirpago,identificador);
+    creartablavalidada(ejecutarvalidacionrendirpago,'table table-responsive','tablarendirpago','#formrendirpago','#divtablarendirpago','/Caja/Rendirpago/Adicion',cabeceracajachicha,true,optenertotales,botonesrendirpago,identificadorrendirpago);
+    creartablaahora(parametrosrendirpago,'table table-responsive','tablarendirpago','#divtablarendirpago','/Caja/Rendirpago/Info',cabeceracajachicha,true,optenertotales,botonesrendirpago,identificadorrendirpago);
 })

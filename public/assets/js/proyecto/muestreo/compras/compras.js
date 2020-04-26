@@ -9,6 +9,22 @@ function eventoscompras(){
 		filelabel.innerHTML = filename;
 		console.log(filename);
 	});
+	$('#formcargacompras').submit(function(event){
+		event.preventDefault();
+		function setarchivocompras(data) {
+			var idarchivo = data.id;
+			asignarvalor('#idarchivocompras',idarchivo);
+		}
+		cargararchivo('#formcargacompras','#cargacomprasfile','/ImportExcelCompra',setarchivocompras);
+	});
+	$('#formfiltrocompras').submit(function(event){
+		event.preventDefault();
+		function setarchivocompras(data) {
+			var idarchivo = data.id;
+			asignarvalor('#idarchivocompras',idarchivo);
+		}
+		creartabla('#divtablacompras','tablacompras','/FiltrarExcelCompra',setarchivocompras);
+	});
 	$('#btn-exportar-mayorcompras').click(function(e){
 		exportarmayorcompras();
 	});

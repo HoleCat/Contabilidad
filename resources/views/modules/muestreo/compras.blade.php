@@ -3,67 +3,91 @@
     <div class="col-12 text-center">
         <h3 class="py-3">IMPORTACION DE COMPRAS</h1>
     </div>
-    <div class="col-12 py-1 px-0 text-left">
+    <div class="jumbotron col-12 text-left py-3">
+        <h5>1. Importar archivo</h5>
+        <form id="formcargacompras" enctype="multipart/form-data">
+            <div class="col-12 d-flex px-0">
+                <div class="col-xl-6 col-md-7 col-sm-8 col-xs-10 pl-0">
+                    <div class="form-group">
+                        <label>NOMBRE PARA EL ARCHIVO</label>
+                        <input type="text" class="form-control" name="nombrearchivo">
+                    </div>
+                    <div class="custom-file px-1">
+                        <input type="file" class="custom-file-input" id="comprasfile" name="myfile">
+                        <label id="compraslabel" class="custom-file-label" for="comprasfile"></label>
+                    </div>
+                </div>
+                <div class="col-xs-2 text-center" id="cargacomprasfile">
+                    
+                </div>
+            </div>
+            <div class="col-12 text-left px-0 py-3">
+                <div class="form-group">
+                    <input type="submit" value="IMPORTAR" class="btn btn-success">
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="jumbotron col-12 text-left py-3">
+        <h5>2. Filtra la data</h5>
+        <div class="row">
+            <div class="col-xl-3 col-md-4 col-sm-12 col-xs-12">
+                <form id="formcompras" class="text-center">
+                    <input type="hidden" name="iduso" value="{{$uso->id}}">
+                    <input type="hidden" id="idarchivocompras" name="id_archivo" value="">
+                    <div class="form-group text-left d-flex">
+                        <input type="submit" class="btn btn-primary" value="FILTRAR">
+                        <div class="spinner-border text-primary mx-2" role="status">
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                    </div>
+                    <div class="d-flex flex-wrap text-left px-0">
+                        <div class="col-12 py-1 px-0">
+                            <label for="">TIPO DE COMPARACION</label>
+                            <select class="custom-select" name="comparacion">
+                                <option value="1">ENTRE</option>
+                                <!--AMBOS-->
+                                <option value="1">(>=) MAYOR IGUAL</option>
+                                <option value="2">(=) IGUAL</option>
+                                <option value="3">(<=) MENOR IGUAL</option>
+                                <!--SOLO MINIMO-->
+                            </select>
+                        </div>
+                        <div class="col-12 py-1 px-0">
+                            <label for="">CANTIDAD DE REGISTOS</label>
+                            <input class="form-control" type="number" name="cantidad">
+                        </div>
+                        <div class="col-12 py-1 px-0">
+                            <label for="">IMPORTE MINIMO</label>
+                            <input class="form-control" type="number" name="importeminimo">
+                        </div>
+                        <div class="col-12 py-1 px-0">
+                            <label for="">IMPORTE MAXIMO</label>
+                            <input class="form-control" type="number" name="importemaximo">
+                        </div>
+                        <div class="col-12 py-1 px-0">
+                            <label for="">TIPO DE COMPROBANTE</label>
+                            <select class="custom-select" name="tipocomprobante">
+                                @foreach ($comprobantes as $comprobante)
+                                <option value="{{ $comprobante->codigo }}">{{ $comprobante->codigo }} {{ $comprobante->descripcion }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="col-xl-9 col-md-8 col-sm-12 col-xs-12">
+                <div class="col-12" id="divcomprastable">
+                    
+                </div>    
+            </div>
+        </div>
+    </div>
+    <div class="jumbotron col-12 text-left py-3">
+        <h5>3. Exportar resultado</h5>
         <form action="/ExportExcelCompra" method="GET">
             <button type="submit" id="btn-exportar-mayorcompras" class="btn btn-warning">Exportar en excel</button>
         </form>
     </div>
-    <div class="col-12">
-        <div class="row">
-            <form id="formcompras" class="text-center">
-            <input type="hidden" name="iduso" value="{{$uso->id}}">
-            <input type="hidden" id="idarchivo" name="idarchivo" value="">
-                <div class="custom-file px-1">
-                    <input type="file" class="custom-file-input" id="comprasfile" name="myfile">
-                    <label id="compraslabel" class="custom-file-label" for="comprasfile"></label>
-                </div>
-                <div class="d-flex flex-wrap text-left">
-                    <div class="col-6 py-1 px-1">
-                        <label for="">TIPO DE COMPARACION</label>
-                        <select class="custom-select" name="comparacion">
-                            <option value="1">ENTRE</option>
-                            <!--AMBOS-->
-                            <option value="1">(>=) MAYOR IGUAL</option>
-                            <option value="2">(=) IGUAL</option>
-                            <option value="3">(<=) MENOR IGUAL</option>
-                            <!--SOLO MINIMO-->
-                        </select>
-                    </div>
-                    <div class="col-6 py-1 px-1">
-                        <label for="">CANTIDAD DE REGISTOS</label>
-                        <input class="form-control" type="number" name="cantidad">
-                    </div>
-                    <div class="col-6 py-1 px-1">
-                        <label for="">IMPORTE MINIMO</label>
-                        <input class="form-control" type="number" name="importeminimo">
-                    </div>
-                    <div class="col-6 py-1 px-1">
-                        <label for="">IMPORTE MAXIMO</label>
-                        <input class="form-control" type="number" name="importemaximo">
-                    </div>
-                    <div class="col-6 py-1 px-1">
-                        <label for="">TIPO DE COMPROBANTE</label>
-                        <select class="custom-select" name="tipocomprobante">
-                            @foreach ($comprobantes as $comprobante)
-                            <option value="{{ $comprobante->codigo }}">{{ $comprobante->codigo }} {{ $comprobante->descripcion }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="custom-control custom-checkbox">
-                        <input type="checkbox" class="custom-control-input" name="flag" id="comprasflag">
-                        <label class="custom-control-label" for="comprasflag">Filtrar data actual</label>
-                    </div>
-                </div>
-                <input type="submit" class="btn btn-success">
-            </form>
-        </div>
-
-        <div class="row">
-            <div class="col-12" id="divcomprastable">
-            
-            </div>    
-        </div>
-
-        <script type="text/javascript" src="{{ asset('assets/js/proyecto/muestreo/compras/compras.js')}}"></script>
-    </div>
+    <script type="text/javascript" src="{{ asset('assets/js/proyecto/muestreo/compras/compras.js')}}"></script>
 </div>

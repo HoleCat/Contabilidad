@@ -17,11 +17,11 @@
                     <div class="col-6 py-1 px-1">
                         <label for="">DESDE QUE DIA SE CONSIDERA EL MES ACTUAL ?</label>
                         <select class="custom-select" name="check">
-                            <option value="1">DESDE EL PRIMERO</option>
+                            <option value="1">SI ES CUALQUIER DIA SE SUMA UNO</option>
                             <!--AMBOS-->
-                            <option value="2">DESDE EL QUINCE</option>
-                            <option value="3">DESDE EL 31</option>
-                            <option value="4">HALLAR DESCRIPCIACION POR DIAS</option>
+                            <option value="2">SI ES MENOR A 16 SE SUMA UNO</option>
+                            <option value="3">SI EL DIA ES IGUAL 1 SE AUMENTA UNO</option>
+                            <option value="4">DIFERENCIA DE DIAS</option>
                             <!--SOLO MINIMO-->
                         </select>
                     </div>

@@ -4,6 +4,26 @@
         <h3 class="py-3">CALCULO DE CAJA CHICA</h1>
     </div>
     <div class="col-12">
+        <form action="/Caja/Cajachica/Exportar">
+            <div class="d-flex flex-wrap col-xl-6 col-md-8 col-xs-12 mx-auto">
+                <div class="form-group col">
+                    <input class="form-control" type="mail" name="correo" placeholder="CORREO">
+                </div>
+                <div class="form-group col">
+                    <input class="form-control" type="text" name="asunto" placeholder="ASUNTO">
+                </div>
+                <div class="form-group col text-right">
+                    <input type="hidden" name="uso_id" value="{{ $uso->id }}">
+                    <input class="btn btn-success" type="submit" value="EXPORTAR">
+                    <div class="form-check">
+                        <input name="mail" class="form-check-input" type="checkbox">
+                        <label for="form-check-label">enviar mail</label>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="col-12">
         <div class="col-xl-12 col-md-12 col-sm-12 col-xs-12">
             <form id="formcajachica">
                 <input type="hidden" id="liquidaciondetalle_id" name="liquidaciondetalle_id" value="{{ $liquidacion->id }}">
@@ -31,7 +51,7 @@
                                     <input oninput="validacionunitariabasica('#codigodocumentocajachica','#validador-nrodocumento',3,5)" id="codigodocumentocajachica" placeholder="COD" name="codigodocumento" class="form-control" type="text">
                                 </div>
                                 <div class="col-6 px-0">
-                                    <input oninput="validacionunitariabasica('#numerodocumentocajachica','#validador-nrodocumento',3,5)" id="numerodocumentocajachica" placeholder="NRO" name="documento" class="form-control" type="number">
+                                    <input oninput="validacionunitariabasica('#numerodocumentocajachica','#validador-nrodocumento',3,12)" id="numerodocumentocajachica" placeholder="NRO" name="documento" class="form-control" type="number">
                                 </div>
                             </div>
                             <small class="text-danger fade" id="validador-nrodocumento">Campo obligatorio</small>
@@ -117,6 +137,7 @@
                 </div>
             </div>
         </div>
+        
         <div id="divtablacajachica" class="col-12">
             
         </div>

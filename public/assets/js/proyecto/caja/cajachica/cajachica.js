@@ -12,17 +12,18 @@ var datacajachica;
 
 var cabeceracajachicha = [
     'liquidacion_id'
-    ,'RUC'
-    ,'TipoDocumento'
-    ,'Documento'
-    ,'Fecha'
-    ,'Moneda'
-    ,'Concepto'
-    ,'Contabilidad'
-    ,'Centrocosto'
-    ,'Base'
-    ,'IGV'
-    ,'Monto'
+    ,'ruc'
+    ,'tipodocumento'
+    ,'codigodocumento'
+    ,'documento'
+    ,'fecha'
+    ,'moneda'
+    ,'concepto'
+    ,'contabilidad'
+    ,'centrocosto'
+    ,'base'
+    ,'igv'
+    ,'monto'
 ];
 
 var identificadorcajachica = 0;
@@ -47,7 +48,7 @@ function confirmaciontablacajachica() {
     console.log('la tabla cargo');
 }
 
-function ejecutarvalidacion() {
+function ejecutarvalidacioncajachica() {
     var eso = [];
     var resultado = true;
     var sunat = false;
@@ -102,6 +103,6 @@ function optenertotales() {
 }
 
 $(function(){
-    creartablavalidada(ejecutarvalidacion,'table table-responsive','tablacajachica','#formcajachica','#divtablacajachica','/Caja/Cajachica/Adicion',cabeceracajachicha,true,optenertotales,botonescajachica,identificadorcajachica);
+    creartablavalidada(ejecutarvalidacioncajachica,'table table-responsive','tablacajachica','#formcajachica','#divtablacajachica','/Caja/Cajachica/Adicion',cabeceracajachicha,true,optenertotales,botonescajachica,identificadorcajachica);
     creartablaahora(parametroscajachica,'table table-responsive','tablacajachica','#divtablacajachica','/Caja/Cajachica/Info',cabeceracajachicha,true,optenertotales,botonescajachica,identificadorcajachica);
 })

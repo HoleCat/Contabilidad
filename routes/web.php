@@ -8,7 +8,7 @@ use App\Clases\Modelosgenerales\Moneda;
 use App\clases\modelosgenerales\Pais;
 use App\Clases\Modelosgenerales\Tipouso;
 use App\Clases\Uso;
-
+use App\Userdata;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -27,8 +27,51 @@ use Illuminate\Support\Facades\DB;
 Route::get('/', function () {
     return view('welcome');
 });
+Route::get('/Admin', function () {
+    return view('admin');
+});
+Route::match(['get', 'post'], '/Admin/Empresa', 'AdminController@empresa');
+Route::match(['get', 'post'], '/Admin/Sistemacontable', 'AdminController@sistemacontable');
 
 Auth::routes();
+
+Route::match(['get', 'post'],'/Seguimiento', function () {
+    
+    $user = Auth::user();
+    $userdatacount = Userdata::where('user_id','=',$user->id)->count();
+    if($userdatacount>0)
+    {
+        $userdata = Userdata::firstWhere('user_id','=',$user->id);
+        return view('layouts.seguimiento',['user'=>$user,'userdata'=>$userdata]);
+    } else {
+        $userdata = new Userdata();
+        $userdata->user_id = Auth::user()->id;
+        $userdata->save();
+        return view('layouts.seguimiento',['user'=>$user,'userdata'=>$userdata]);
+    }
+});
+Route::match(['get', 'post'],'/Seguimiento/Data', 'SeguimientoController@data');
+
+Route::match(['get', 'post'],'/Userdata', function () {
+
+    $user = Auth::user();
+    $userdatacount = Userdata::where('user_id','=',$user->id)->count();
+    if($userdatacount>0)
+    {
+        $userdata = Userdata::firstWhere('user_id','=',$user->id);
+        return view('layouts.userdata',['user'=>$user,'userdata'=>$userdata]);
+    } else {
+        $userdata = new Userdata();
+        $userdata->user_id = Auth::user()->id;
+        $userdata->save();
+        return view('layouts.userdata',['user'=>$user,'userdata'=>$userdata]);
+    }
+});
+Route::match(['get', 'post'],'/Userdata/Perfil', 'UserdataController@perfil');
+Route::match(['get', 'post'],'/Userdata/Empresa', 'UserdataController@empresa');
+
+Route::post('/Userdata/Data', 'UserdataController@index' );
+Route::post('/Userdata/Editar', 'UserdataController@store' );
 
 Route::get('/home', 'HomeController@index')->name('home');
 
@@ -74,10 +117,10 @@ Route::match(['get', 'post'],'/Caja', function () {
                     $centrocostos = DB::table('centrocostos')->get();
                     
                     if($liquidacion->servicio == 'cajachica'){
-                        return view('modules.caja.cajachica',['centrocostos'=>$centrocostos,'monedas'=>$monedas,'uso'=>$uso,'liquidacion'=>$liquidacion,'documentos'=>$tiposdocumento,'codigocontable'=>$codigocontable]);
+                        return view('modules.caja.cajachica',['centrocostos'=>$centrocostos,'monedas'=>$monedas,'uso'=>$usoliquidacion,'liquidacion'=>$liquidacion,'documentos'=>$tiposdocumento,'codigocontable'=>$codigocontable]);
                     }
                     if($liquidacion->servicio == 'rendirpago'){
-                        return view('modules.caja.rendirpago',['centrocostos'=>$centrocostos,'monedas'=>$monedas,'uso'=>$uso,'liquidacion'=>$liquidacion,'documentos'=>$tiposdocumento,'codigocontable'=>$codigocontable]);
+                        return view('modules.caja.rendirpago',['centrocostos'=>$centrocostos,'monedas'=>$monedas,'uso'=>$usoliquidacion,'liquidacion'=>$liquidacion,'documentos'=>$tiposdocumento,'codigocontable'=>$codigocontable]);
                     }
                     
                     
@@ -125,10 +168,12 @@ Route::match(['get', 'post'],'/Caja/Totales', 'CajaController@obtenertotales' );
 Route::post('/Caja/Cajachica', 'CajaController@cajachica' );
 Route::post('/Caja/Cajachica/Adicion', 'CajaController@cajachicainsert' );
 Route::post('/Caja/Cajachica/Info', 'CajaController@cajachicainfo');
+Route::match(['get', 'post'], '/Caja/Cajachica/Exportar', 'CajaController@cajachicaexportar');
 
 Route::post('/Caja/Rendirpago', 'CajaController@rendirpago' );
 Route::post('/Caja/Rendirpago/Adicion', 'CajaController@rendirpagoinsert' );
 Route::post('/Caja/Rendirpago/Info', 'CajaController@rendirpagoinfo');
+Route::match(['get', 'post'], '/Caja/Rendirpago/Exportar', 'CajaController@cajachicaexportar');
 
 Route::get('/Caja/Parametros', function () { return view('modules.caja.parametros'); })->name('View.Parametros');
 
@@ -331,8 +376,9 @@ Route::get('/Muestreo/Ventas', function () {
 
 })->name('View.Ventas');
 
-Route::match(['get', 'post'], '/ImportExcelCompra', 'MayorcompraController@import');
-Route::match(['get', 'post'], '/ExportExcelCompra', 'MayorcompraController@export');
+Route::match(['get', 'post'], '/ImportarExcelCompra', 'MayorcompraController@importar');
+Route::match(['get', 'post'], '/ExportarExcelCompra', 'MayorcompraController@exportar');
+Route::match(['get', 'post'], '/FiltrarExcelCompra', 'MayorcompraController@filtrar');
 Route::match(['get', 'post'], '/ImportExcelVentas', 'MayorventaController@import');
 Route::match(['get', 'post'], '/ImportExcelGasto', 'MayorgastoController@import');
 Route::match(['get', 'post'], '/ImportExcelActivo', 'ActivofijoController@import');

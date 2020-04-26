@@ -2,13 +2,26 @@
 
 namespace App\Http\Controllers;
 
+use App\Clases\Almacenamiento;
+use App\Clases\Caja\Aprobador;
 use App\Clases\Caja\Cajachica;
 use App\Clases\Caja\LiquidacionDetalle;
+use App\Clases\Modelosgenerales\Archivo;
 use App\Clases\Uso;
 use App\Rendirpago;
+use Barryvdh\DomPDF\Facade as PDF;
+use Carbon\Carbon;
+use DateTime;
+use Facade\FlareClient\Stacktrace\File;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Pdf\Mpdf;
 
 class CajaController extends Controller
 {
@@ -21,11 +34,12 @@ class CajaController extends Controller
             $contadorusocaja = DB::table('usos')->where('idusuario','=',$idusuario)->where('idtipo','=',$tipo)->count();
 
             if($contadorusocaja > 0){
-                $uso = DB::table('usos')
-                ->where('idusuario','=',$idusuario)
-                ->where('idtipo','=',$tipo)
-                ->latest()
-                ->first();
+                $uso = new Uso();
+                $uso->idusuario = $idusuario;
+                $uso->uso_id = 0;
+                $uso->referencia = 'Ejemplo de referencia  liquidacion nueva';
+                $uso->idtipo = $tipo;
+                $uso->save();
 
                 $uso_id = $uso->id;
 
@@ -211,4 +225,68 @@ class CajaController extends Controller
         return $data;
     }
     
+    public function cajachicaexportar(Request $request) {
+
+        $liquidacion = Uso::firstWhere('id','=',$request->uso_id);
+        
+        $liquidaciondetalle = LiquidacionDetalle::firstWhere('uso_id','=',$liquidacion->id);
+        
+        
+        $correo = $request->correo;
+        $asunto = $request->asunto;
+        
+        $user = Auth::user();
+        $date = Carbon::now()->format('d-m-Y');
+        $aprobador = Aprobador::firstWhere('id','=',$liquidaciondetalle->aprobador_id);
+
+        $tipo = $liquidaciondetalle->servicio;
+        if($tipo=='rendirpago'){
+            $data = DB::table('rendirpagos')->where('liquidacion_id','=',$liquidaciondetalle->id)->get();
+        } else if($tipo=='cajachica') {
+            $data = DB::table('cajachicas')->where('liquidacion_id','=',$liquidaciondetalle->id)->get();
+        }
+        
+        $pdf = PDF::loadView('modules.caja.pdfliquidacion', ['correo'=>$correo,'asunto'=>$asunto, 'aprobador'=>$aprobador,'liquidaciondetalle'=>$liquidaciondetalle, 'date'=>$date,'user'=>$user,'data' => $data]); 
+
+        if($request->mail)
+        {
+            $content = $pdf->download()->getOriginalContent();
+            $filename = 'report';
+            $exe = '.pdf';
+            $unique_name = $filename.time().$exe;
+            $ruta = Storage::put('public/caja/'.$user->name.'/'.$unique_name,$content);
+            //$ruta = Storage::putFile('photos', new File('/public/caja/'.$user->name.'/'));
+
+            $ruta = public_path('Storage/caja/'.$user->name.'/');
+            
+            $ruta = $ruta.$unique_name;
+            
+            $archivo = new Archivo();
+            $archivo->user_id = $user->id;
+            $archivo->uso_id = $liquidacion->id;
+            $archivo->ruta = $ruta;
+            $archivo->save();
+            $id_archivo = $archivo->id;
+
+            $info = array(
+                'aprobador' => $aprobador->name.' '.$aprobador->apellido,
+                'nombre' => $user->name,
+                'telefono' => $user->telefono,
+                'correo' => $user->mail,
+                'fecha' => $date,
+                'ruta' => $ruta
+            );
+            
+            Mail::send('modules.caja.mail',$info,function($message){
+                $message->from('201602035x@gmail.com','Contadorapp');
+                $message->to('jorge.hospinal@yahoo.com')->subject('Reporte de caja');
+                $message->to(request()->input('correo'))->subject('Reporte de caja');
+            });
+
+        } else {
+
+        }
+        
+        return $pdf->download('medium.pdf');
+    }
 }

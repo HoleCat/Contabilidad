@@ -131,7 +131,7 @@ class ActivofijoController extends Controller
                 $vdateIn = $request->input('fechainicial');
                 $vdateEnd = $request->input('fechafin');
                 
-                $reporte = DB::select('call calculos_activofijo(?, ?, ?, ?)',[$vchk,$vcant,$vdateIn,$vdateEnd]);
+                $reporte = DB::select('call calculos_activofijo(?, ?, ?)',[$vchk,$vcant,$vdateEnd]);
                 
                 session(['dataactivos' => $reporte]);
 

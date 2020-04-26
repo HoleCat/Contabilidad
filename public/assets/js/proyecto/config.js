@@ -254,7 +254,7 @@ function validarcomprobantes(input,valor) {
                 var html = '<ul class="list-group">';
                 var tipos = data.result;
                 
-                    
+                if(tipos.length>0){
                     tipos.forEach(tipo => {
                         const fecha = tipo.fecha;
                         html += '<li class="list-group-item">';
@@ -268,6 +268,12 @@ function validarcomprobantes(input,valor) {
                             html += '</li>';
                         }
                     });
+                } else {
+                    html += '<li class="list-group-item">';
+                    html += 'SIN REGISTOS QUE MOSTRAR';
+                    html += '</li>';
+                }
+                    
                 
                 html += '</ul>';
                 $('#modal-comprobantes .modal-body').html(html);
@@ -316,4 +322,91 @@ function suplicar(veces) {
         console.log('honto ni gomenasai sadko-chan');
         console.log('watashi baka desu');
     }
+}
+
+function dere(nombre,estilo,golpes){
+	if(estilo=="loli")
+	{ console.log(nombre + ' onichan no baka');}
+	else if(estilo=="punk")
+    { console.log(nombre + ' aniki no bakaaa');
+        for (let index = 0; index < golpes; index++) {
+            if(index == 0){
+                console.log('ata');            
+            } else {
+                console.log('ta');            
+            }
+        }
+    }
+}
+
+function mostrarelementos(id){
+    var tag = document.querySelector(id);
+    var elementos = tag.querySelectorAll('.d-none');
+    for (let index = 0; index < elementos.length; index++) {
+        const element = elementos[index];
+        element.classList.remove('d-none');
+    }
+}
+
+function mostrarcarga(id,siono) {
+	var carga = document.querySelector(id);
+	if(siono == true)
+	{
+        let divspinner = document.createElement('div');
+        divspinner.setAttribute('class','spinner-border text-warning');
+        divspinner.setAttribute('role','status');
+        let spinner = document.createElement('span');
+        spinner.setAttribute('class','sr-only');
+        divspinner.append(spinner)
+        carga.innerHTML = '';
+        carga.append(divspinner);
+    }
+    else
+    {
+        let check = document.createElement('span');
+        check.setAttribute('class','fas fa-check-circle text-success fa-2x py-1');
+		carga.innerHTML = '';
+        carga.append(check);
+	}
+}
+
+function asignarvalor(id,valor) {
+    var tag = document.querySelector(id);
+    tag.value = valor;
+}
+
+function cargararchivo(form,spinner,ruta,funcion) {
+	var formulario = document.querySelector(form);
+    var formData = new FormData(formulario);
+    var resultado;
+	mostrarcarga(spinner,true);
+	$.ajax({
+		url: ruta,
+		type: 'POST',
+		data: formData,
+		processData: false,
+		contentType: false,
+		success: function(data){
+			resultado = data;
+		}
+	}).done(function(){
+        funcion(resultado);
+		mostrarcarga(spinner,false);
+    });
+    return resultado;
+}
+
+function ejecutarruta(ruta) {
+    event.preventDefault();
+	$.ajax({
+		url: ruta,
+		type: 'POST',
+		data: formData,
+		processData: false,
+		contentType: false,
+		success: function(data){
+			
+		}
+	}).done(function(){
+	});
 }

@@ -3,15 +3,17 @@
 namespace App\Clases;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class Almacenamiento extends Model
 {
     static function guardarmuestrascompras($username,$file) {
+        $useremail = Auth::user()->email;
         $filenamewithext = $file->getClientOriginalName();
         $filename = pathinfo($filenamewithext, PATHINFO_FILENAME);
         $ext = $file->getClientOriginalExtension();
         $filenametostore = $filename.'_'.time().'.'.$ext;
-        $ruta = $file->move('storage/muestreo/compras/'.$username.'/'.time().'_'.$filenametostore.'/archivo/', $filenametostore);
+        $ruta = $file->move('storage/'.$useremail.'/'.'temporal/', $filenametostore);
         return $ruta;
     }
 

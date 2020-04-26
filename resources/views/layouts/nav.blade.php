@@ -46,13 +46,23 @@
                         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
                             <a class="dropdown-item" href="{{ route('logout') }}"
                                onclick="event.preventDefault();
-                                             document.getElementById('logout-form').submit();">
+                                             document.getElementById('logout-form').submit();"><i class="fas fa-sign-out-alt"></i>
                                 {{ __('Logout') }}
                             </a>
 
                             <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                                 @csrf
                             </form>
+                        
+                            <a class="dropdown-item" id="seguimiento-btn" onclick="getview('#content','/Seguimiento',confirmacion)">
+                                <i class="fas fa-microscope"></i> SEGUIMIENTO
+                            </a>
+                            <a class="dropdown-item" id="datauser-btn" onclick="getview('#content','/Userdata',confirmacion)">
+                                <i class="fas fa-address-card"></i> USUARIO
+                            </a>
+                            <a class="dropdown-item" id="admin-btn" onclick="getview('#content','/Admin',confirmacion)">
+                                <i class="fas fa-user-tie"></i> ADMIN
+                            </a>
                         </div>
                     </li>
                 @endguest
