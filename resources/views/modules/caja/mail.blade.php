@@ -17,6 +17,7 @@
 
     
     {{ $message->embed($ruta) }}
+    {{ $message->embed($ruta2) }}
 
 </body>
 </html>

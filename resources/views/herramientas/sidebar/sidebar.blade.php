@@ -13,6 +13,7 @@
     <a id="opcion-caja" class="mb-1 nav-link bg-danger" data-toggle="pill" role="tab" aria-controls="v-pills-profile" aria-selected="false"><i class="fas fa-hand-holding-usd"></i></a>
     <a id="opcion-activos" class="mb-1 nav-link bg-warning" data-toggle="pill" role="tab" aria-controls="v-pills-messages" aria-selected="false"><i class="fas fa-boxes"></i></a>
     <a id="opcion-balance" class="mb-1 nav-link bg-success" data-toggle="pill" role="tab" aria-controls="v-pills-settings" aria-selected="false"><i class="fas fa-balance-scale"></i></a>
+    <a id="opcion-xml" class="mb-1 nav-link bg-info" data-toggle="pill" role="tab" aria-controls="v-pills-settings" aria-selected="false"><i class="fas fa-file-code"></i></a>
 </div>
 
 <button onclick="optionsbar('#options-bar')" class="btn btn-primary position-fixed btn-options"><i class="fas fa-tools"></i></button>

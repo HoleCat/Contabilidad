@@ -49,15 +49,16 @@ class AdminController extends Controller
 
     public function sistemacontable(Request $request) {
         $sistemacontable = new Sistemacontable();
-        $sistemacontable->codigo = Auth::user()->id;
-        $sistemacontable->user_id = $request->input('nombre');
+        $sistemacontable->codigo = $request->input('codigo');
+        $sistemacontable->user_id = Auth::user()->id;
         $sistemacontable->MANDANTE = $request->input('MANDANTE');
         $sistemacontable->INTERFAZ = $request->input('INTERFAZ');
         $sistemacontable->CORRELAT = $request->input('CORRELAT');
         $sistemacontable->NITEM = $request->input('NITEM');
         $sistemacontable->BUKRS = $request->input('BUKRS');
         $sistemacontable->BUPLA = $request->input('BUPLA');
-        $sistemacontable->NEWBS = $request->input('NEWBS');
+        $sistemacontable->NEWBS_ORIGEN = $request->input('NEWBSORIGEN');
+        $sistemacontable->NEWBS_PROV = $request->input('NEWBSPROVEEDOR');
         $sistemacontable->NEWUM = $request->input('NEWUM');
         $sistemacontable->NEWBK = $request->input('NEWBK');
         $sistemacontable->FWBAS = $request->input('FWBAS');

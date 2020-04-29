@@ -4,6 +4,7 @@ use App\Clases\Caja\LiquidacionDetalle;
 use App\clases\modelosgenerales\Centrocosto;
 use App\clases\modelosgenerales\Codigocontable;
 use App\clases\modelosgenerales\Dni;
+use App\Clases\Modelosgenerales\Empresa;
 use App\Clases\Modelosgenerales\Moneda;
 use App\clases\modelosgenerales\Pais;
 use App\Clases\Modelosgenerales\Tipouso;
@@ -38,6 +39,22 @@ Route::match(['get', 'post'], '/Admin/Sistemacontable', 'AdminController@sistema
 
 Auth::routes();
 
+Route::match(['get', 'post'],'/Xml',
+['uses' => 'FacturaController@Index']
+);
+Route::match(['get', 'post'],'/Xml/Nuevo',
+['uses' => 'FacturaController@Nuevo']
+);
+Route::match(['get', 'post'],'/Xml/Exportar',
+['uses' => 'FacturaController@Exportar']
+);
+Route::match(['get', 'post'],'/upload',[
+    'uses' => 'FacturaController@GetData'
+]);
+Route::match(['get', 'post'],'/Factura/Eliminar',[
+    'uses' => 'FacturaController@eliminar'
+]);
+
 Route::match(['get', 'post'],'/Seguimiento', function () {
     
     $user = Auth::user();
@@ -59,15 +76,18 @@ Route::match(['get', 'post'],'/Userdata', function () {
 
     $user = Auth::user();
     $userdatacount = Userdata::where('user_id','=',$user->id)->count();
+    $empresas = Empresa::get();
+
     if($userdatacount>0)
     {
         $userdata = Userdata::firstWhere('user_id','=',$user->id);
-        return view('layouts.userdata',['user'=>$user,'userdata'=>$userdata]);
+        $empresa = Empresa::where('id','=', $userdata->empresa);
+        return view('layouts.userdata',['empresa'=>$empresa,'user'=>$user,'userdata'=>$userdata,'empresas'=>$empresas]);
     } else {
         $userdata = new Userdata();
         $userdata->user_id = Auth::user()->id;
         $userdata->save();
-        return view('layouts.userdata',['user'=>$user,'userdata'=>$userdata]);
+        return view('layouts.userdata',['user'=>$user,'userdata'=>$userdata,'empresas'=>$empresas]);
     }
 });
 Route::match(['get', 'post'],'/Userdata/Perfil', 'UserdataController@perfil');
@@ -88,7 +108,7 @@ Route::match(['get', 'post'],'/Caja', function () {
         $contadorarchivos = DB::table('archivos')->where('user_id','=',$idusuario)->count();
         
         $aprobadores = DB::table('aprobadors')->where('user_id','=',Auth::user()->id)->get();
-        
+        $sistemas = DB::table('sistemacontables')->get();
         if($contadorusocaja > 0)
         {
             $uso = DB::table('usos')
@@ -120,10 +140,10 @@ Route::match(['get', 'post'],'/Caja', function () {
                     $centrocostos = DB::table('centrocostos')->get();
                     
                     if($liquidacion->servicio == 'cajachica'){
-                        return view('modules.caja.cajachica',['centrocostos'=>$centrocostos,'monedas'=>$monedas,'uso'=>$usoliquidacion,'liquidacion'=>$liquidacion,'documentos'=>$tiposdocumento,'codigocontable'=>$codigocontable]);
+                        return view('modules.caja.cajachica',['sistemas'=>$sistemas,'centrocostos'=>$centrocostos,'monedas'=>$monedas,'uso'=>$usoliquidacion,'liquidacion'=>$liquidacion,'documentos'=>$tiposdocumento,'codigocontable'=>$codigocontable]);
                     }
                     if($liquidacion->servicio == 'rendirpago'){
-                        return view('modules.caja.rendirpago',['centrocostos'=>$centrocostos,'monedas'=>$monedas,'uso'=>$usoliquidacion,'liquidacion'=>$liquidacion,'documentos'=>$tiposdocumento,'codigocontable'=>$codigocontable]);
+                        return view('modules.caja.rendirpago',['sistemas'=>$sistemas,'centrocostos'=>$centrocostos,'monedas'=>$monedas,'uso'=>$usoliquidacion,'liquidacion'=>$liquidacion,'documentos'=>$tiposdocumento,'codigocontable'=>$codigocontable]);
                     }
                     
                     
@@ -179,7 +199,6 @@ Route::post('/Caja/Rendirpago/Info', 'CajaController@rendirpagoinfo');
 Route::match(['get', 'post'], '/Caja/Rendirpago/Exportar', 'CajaController@cajachicaexportar');
 
 Route::get('/Caja/Parametros', function () { return view('modules.caja.parametros'); })->name('View.Parametros');
-
 
 Route::get('/Muestreo', function () { return view('modules.muestreo.muestreo'); })->name('View.Muestreo');
 Route::get('/Muestreo/Compras', function () {
@@ -424,7 +443,8 @@ Route::get('/Activos', function () {
     
 return view('modules.activos.activos');
 })->name('View.Activos');
-Route::match(['get', 'post'], '/Activos/Importar', 'ActivofijoController@import');
+Route::match(['get', 'post'], '/Activos/Importar', 'ActivofijoController@importar');
+Route::match(['get', 'post'], '/Activos/Filtrar', 'ActivofijoController@filtrar');
 
 Route::get('/Balance', function () {
 
@@ -562,7 +582,7 @@ Route::get('/Dni', function () {
 Route::get('/Muestreo/TipoUso', function () { 
     
     $tipo = new Tipouso([
-        'descripcion' => 'Balance'
+        'descripcion' => 'Xml'
     ]);
     $tipo->save();
 

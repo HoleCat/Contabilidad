@@ -41,8 +41,11 @@ class Txtexportaciones extends Model
 
     public static function sumIf($yr, $arr, $string) {
         $sum = 0;
+        $cont = 1;
         foreach ($arr as $data) {
             if(substr($data[0],0,4) == $yr && mb_strtoupper($data[23]) == $string) $sum += ($data[17] - $data[18]);
+            //if(mb_strtoupper($data[23])=='PROPIEDAD, PLANTA Y EQUIPO') {echo substr($data[0],0,4).'_'.$cont.' '.mb_strtoupper($data[23]);
+            //$cont++;}
         }
         return $sum;
     }

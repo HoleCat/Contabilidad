@@ -19,7 +19,17 @@
                     </div>  
                 </li>
                 <li class="list-group-item">USUARIO    : {{ $user->name }}<input class="d-none form-control" type="text" name="usuario" value=""></li>
-                <li class="list-group-item">EMPRESA    : {{ $user->mail }}<input class="d-none form-control" type="text" name="empresa" value=""></li>
+                <li class="list-group-item">EMPRESA    : @if ($empresa)
+                                                        {{ $empresa->razonsocial }}
+                                                        @else
+                                                        SIN EMPRESA
+                                                        @endif
+                    <select class="custom-select d-none" name="tipocomprobante">
+                        @foreach ($empresas as $empresas)
+                        <option value="{{ $empresas->id }}">{{ $empresas->razonsocial }}</option>
+                        @endforeach
+                    </select>
+                </li>
                 <li class="list-group-item">APROBADOR  : {{ $user->name }}<input class="d-none form-control" type="text" name="aprobador" value=""></li>
                 <li class="list-group-item">|<a class="btn btn-info" onclick="mostrarelementos('#formuserdata1')"><i class="fas fa-unlock"></i></a>|<input value="GUARDAR CAMBIOS" class="d-none btn btn-warning" type="submit"></li>
             </ul>

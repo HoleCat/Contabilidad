@@ -410,3 +410,22 @@ function ejecutarruta(ruta) {
 	}).done(function(){
 	});
 }
+
+function eliminarregistro(ruta,id,funcion) {
+    let formdata = new FormData();
+    formdata.append('id',id);
+    event.preventDefault();
+    var resultado;
+	$.ajax({
+		url: ruta,
+		type: 'POST',
+		data: formdata,
+		processData: false,
+		contentType: false,
+		success: function(data){
+			resultado = data;
+		}
+	}).done(function(){
+        funcion(resultado);
+	});
+}

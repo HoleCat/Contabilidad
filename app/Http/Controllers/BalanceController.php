@@ -143,7 +143,7 @@ class BalanceController extends Controller
         arsort($years);
         $PL_col_pos = 5;
         $BG_col_pos = 4;
-        foreach ($years as $yr) {
+        /*foreach ($years as $yr) {
             $PL_col = Txtexportaciones::columnLetter($PL_col_pos);
             $spreadsheet->setActiveSheetIndex(1)->setCellValue($PL_col."7", $yr);
             $spreadsheet->setActiveSheetIndex(1)->setCellValue($PL_col."8", "S/.");
@@ -240,6 +240,107 @@ class BalanceController extends Controller
 
             $BG_col_pos++;
             //$spreadsheet->getActiveSheet()->getColumnDimension(Txtexportaciones::columnLetter($BG_col_pos))->setWidth(3);
+            $BG_col_pos++;
+        }*/
+        foreach ($years as $yr) {
+            $PL_col = Txtexportaciones::columnLetter($PL_col_pos);
+            $spreadsheet->setActiveSheetIndex(1)->setCellValue($PL_col."7", $yr);
+            $spreadsheet->setActiveSheetIndex(1)->setCellValue($PL_col."8", "S/.");
+    
+            $sum_ingresos = Txtexportaciones::sumIf($yr, $array_data, "INGRESOS");
+            $spreadsheet->setActiveSheetIndex(1)
+                ->setCellValue($PL_col."10", $sum_ingresos)
+                ->setCellValue($PL_col."11", "=sum(".$PL_col."10)");
+    
+            $sum_costo_venta = Txtexportaciones::sumIf($yr, $array_data, "COSTO DE VENTA");
+            $spreadsheet->setActiveSheetIndex(1)
+                ->setCellValue($PL_col."13", $sum_costo_venta)
+                ->setCellValue($PL_col."14", "=sum(".$PL_col."13)")
+                ->setCellValue($PL_col."15", "=+".$PL_col."11+".$PL_col."14");
+    
+            $sum_gastos_operativos      = Txtexportaciones::sumIf($yr, $array_data, "GASTOS OPERATIVOS");
+            $sum_cargas_personal        = Txtexportaciones::sumIf($yr, $array_data, "CARGAS DE PERSONAL");
+            $sum_provisiones_gastos     = Txtexportaciones::sumIf($yr, $array_data, "PROVISIONES-GASTOS");
+            $sum_otros_ingresos         = Txtexportaciones::sumIf($yr, $array_data, "OTROS INGRESOS");
+            $spreadsheet->setActiveSheetIndex(1)
+                ->setCellValue($PL_col."17", $sum_gastos_operativos)
+                ->setCellValue($PL_col."18", $sum_cargas_personal)
+                ->setCellValue($PL_col."19", $sum_provisiones_gastos)
+                ->setCellValue($PL_col."20", $sum_otros_ingresos)
+                ->setCellValue($PL_col."21", "=sum(".$PL_col."15:".$PL_col."20)");
+    
+            $sum_ingresos_gastos    = Txtexportaciones::sumIf($yr, $array_data, "INGRESOS Y GASTOS FINANCIEROS");
+            $sum_diferencia_cambio  = Txtexportaciones::sumIf($yr, $array_data, "DIFERENCIA DE CAMBIO");
+            $spreadsheet->setActiveSheetIndex(1)
+                ->setCellValue($PL_col."23", $sum_ingresos_gastos)
+                ->setCellValue($PL_col."24", $sum_diferencia_cambio)
+                ->setCellValue($PL_col."25", "=sum(".$PL_col."21:".$PL_col."24)");
+    
+            $PL_col_pos++;
+            $spreadsheet->getActiveSheet()->getColumnDimension(Txtexportaciones::columnLetter($PL_col_pos))->setWidth(3);
+            $PL_col_pos++;
+    
+    
+            // BG
+            $BG_col = Txtexportaciones::columnLetter($BG_col_pos);
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue($BG_col."9", $yr);
+    
+            $sum_efectivo             = Txtexportaciones::sumIf($yr, $array_data, "EFECTIVO Y EQUIVALENTE DE EFECTIVO");
+            $sum_cuentas_por_cobrar_1 = Txtexportaciones::sumIf($yr, $array_data, "CUENTAS POR COBRAR COMERCIALES");
+            $sum_cuentas_por_cobrar_2 = Txtexportaciones::sumIf($yr, $array_data, "OTRAS CUENTAS POR COBRAR INTERCOMPANY");
+            $sum_cuentas_por_cobrar_3 = Txtexportaciones::sumIf($yr, $array_data, "OTRAS CUENTAS POR COBRAR");
+            $sum_cuentas_por_cobrar_4 = Txtexportaciones::sumIf($yr, $array_data, "CUENTAS POR COBRAR INTERCOMPANY");
+            $sum_gastos_pagados       = Txtexportaciones::sumIf($yr, $array_data, "GASTOS PAGADOS POR ANTICIPADO");
+            $sum_existencias          = Txtexportaciones::sumIf($yr, $array_data, "EXISTENCIAS");
+            $spreadsheet->setActiveSheetIndex(0)
+                ->setCellValue($BG_col."10", $sum_efectivo)
+                ->setCellValue($BG_col."11", $sum_cuentas_por_cobrar_1)
+                ->setCellValue($BG_col."12", $sum_cuentas_por_cobrar_2)
+                ->setCellValue($BG_col."13", $sum_cuentas_por_cobrar_3)
+                ->setCellValue($BG_col."14", $sum_cuentas_por_cobrar_4)
+                ->setCellValue($BG_col."15", $sum_gastos_pagados)
+                ->setCellValue($BG_col."16", $sum_existencias)
+                ->setCellValue($BG_col."18", "=sum(".$BG_col."10:".$BG_col."16)");
+    
+            $sum_propiedad = Txtexportaciones::sumIf($yr, $array_data, "PROPIEDAD, PLANTA Y EQUIPO");
+            $sum_intangibles = Txtexportaciones::sumIf($yr, $array_data, "INTANGIBLES");
+            $spreadsheet->setActiveSheetIndex(0)
+                ->setCellValue($BG_col."24", $sum_efectivo)
+                ->setCellValue($BG_col."26", $sum_cuentas_por_cobrar_1)
+                ->setCellValue($BG_col."27", "=sum(".$BG_col."24:".$BG_col."26)")
+                ->setCellValue($BG_col."36", "=+".$BG_col."27+".$BG_col."18");
+    
+            $BG_col_2 = Txtexportaciones::columnLetter($BG_col_pos + 5);
+    
+            $sum_otras_cuentas = Txtexportaciones::sumIf($yr, $array_data, "OTRAS CUENTAS POR PAGAR");
+            $sum_revisar = Txtexportaciones::sumIf($yr, $array_data, "REVISAR");
+            $sum_cuentas_por_pagar = Txtexportaciones::sumIf($yr, $array_data, "CUENTAS POR PAGAR COMERCIALES");
+            $sum_intercompany_por_pagar = Txtexportaciones::sumIf($yr, $array_data, "INTERCOMPANY POR PAGAR");
+            $spreadsheet->setActiveSheetIndex(0)
+                ->setCellValue($BG_col_2."10", $sum_otras_cuentas)
+                ->setCellValue($BG_col_2."11", $sum_revisar)
+                ->setCellValue($BG_col_2."12", $sum_cuentas_por_pagar)
+                ->setCellValue($BG_col_2."14", $sum_intercompany_por_pagar)
+                ->setCellValue($BG_col_2."18", "=sum(".$BG_col_2."10:".$BG_col_2."14)");
+    
+            $sum_obligaciones_financieras = Txtexportaciones::sumIf($yr, $array_data, "OBLIGACIONES FINANCIERAS");
+            $sum_activo_diferido = Txtexportaciones::sumIf($yr, $array_data, "ACTIVO DIFERIDO");
+            $spreadsheet->setActiveSheetIndex(0)
+                ->setCellValue($BG_col_2."24", $sum_obligaciones_financieras)
+                ->setCellValue($BG_col_2."25", $sum_activo_diferido)
+                ->setCellValue($BG_col_2."27", "=sum(".$BG_col_2."24:".$BG_col_2."25)");
+    
+            $sum_patrimonio = Txtexportaciones::sumIf($yr, $array_data, "PATRIMONIO");
+            $spreadsheet->setActiveSheetIndex(0)
+                ->setCellValue($BG_col_2."31", $sum_patrimonio);
+    
+            $spreadsheet->setActiveSheetIndex(0)
+                ->setCellValue($BG_col_2."32", "=-PL!".$PL_col."25")
+                ->setCellValue($BG_col_2."33", "=sum(".$BG_col_2."31:".$BG_col_2."32)")
+                ->setCellValue($BG_col_2."36", "=+".$BG_col_2."18+".$BG_col_2."27+".$BG_col_2."33");
+    
+            $BG_col_pos++;
+            $spreadsheet->getActiveSheet()->getColumnDimension(Txtexportaciones::columnLetter($BG_col_pos))->setWidth(3);
             $BG_col_pos++;
         }
 

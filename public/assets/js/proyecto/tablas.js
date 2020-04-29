@@ -451,13 +451,14 @@ function creartablapositiva(formData, clases, tabla, contenedor, ruta, cabeceras
 }
 
 //creartabla('#divtablacompras','tablacompras','/FiltrarExcelCompra',setarchivocompras);
-function creartablachevere(clases,tabla,contenedor,ruta,cabecera,columnas,datatable)
+function creartablaone(formdata,spinner,clases,tabla,contenedor,ruta,cabecera,columnas,datatable,funcion,botones)
 {
+	mostrarcarga(spinner,true);
 	var resultado;
 	$.ajax({
         url: ruta,
         type: 'POST',
-        data: formData,
+        data: formdata,
         processData: false,
         contentType: false,
         success: function (data) {
@@ -468,19 +469,57 @@ function creartablachevere(clases,tabla,contenedor,ruta,cabecera,columnas,datata
             var thead;
             var tr;
             var th;
-            var td;
-
-            table = document.createElement('table');
+			var td;
+			
+			table = document.createElement('table');
             table.setAttribute('id', tabla);
             table.setAttribute('class', clases);
             tbody = document.createElement('tbody');
-            thead = document.createElement('thead');
+			thead = document.createElement('thead');
+			
+			tr = document.createElement('tr');
+			for (let index = 0; index < cabecera.length; index++) {
+				const head = cabecera[index];
+				th = document.createElement('th');
+				th.innerHTML = cabecera[index];
+				tr.append(th);
+			}
+			thead.append(tr);
 
-            const cantcolumnas = cabeceras.length;
-			const columnas = cabeceras;
+			for (let index = 0; index < resultado.length; index++) {
+				//const reg = resultado[index];
+				tr = document.createElement('tr');
+				for (let col = 0; col < columnas.length; col++) {
+					const dato = resultado[index][columnas[col]];
+					td = document.createElement('td');
+                    td.innerHTML = dato;
+                    tr.append(td);
+				}
+				botones.forEach(btn => {
+                    btn.id_columnname = resultado[index][btn.id_columnname];
+                    td = document.createElement('td');
+                    let boton = document.createElement('button');
+                    boton.setAttribute('class', 'btn btn-danger');
+                    boton.innerHTML = btn.texto;
+                    boton.setAttribute('onclick', btn.accion + '(' + btn.id_columnname + ',' + "'" + btn.ruta + "')");
+                    td.append(boton);
+                    tr.append(td);
+                });
+				tbody.append(tr);
+			}
+			table.append(thead);
+            table.append(tbody);
+            document.querySelector(contenedor).append(table);
 		}
 	}).done(function(){
-		
+		if (datatable == true) {
+            $('#' + tabla).DataTable({
+                "iDisplayLength": 5,
+                "aLengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]]
+            });
+		}
+		mostrarcarga(spinner,false);
+        funcion(resultado);
 	});
 }
 
@@ -505,3 +544,4 @@ function calculototal(data) {
     let neto = document.querySelector('#txtnetocajachica');
     neto.value = montoentregado.value - total.value;
 }
+

@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\DB;
 use App\Formatos\Excelmuestreo;
 use App\Clases\Almacenamiento;
 use App\Clases\Modelosgenerales\Archivo;
+use App\Mayorgasto;
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -95,7 +96,7 @@ class MayorcompraController extends Controller
         //
     }
 
-    public function export() {
+    public function exportar() {
         $json_data = session('datacompras');
 
         $cell_order_compras = array("A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z","AA","AB","AC","AD","AE","AF","AG","AH","AI","AJ","AK","AL","AM","AN","AO","AP");
@@ -134,20 +135,9 @@ class MayorcompraController extends Controller
         $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
         $writer->save('php://output');
         exit;
-        
-        //$writer = new Xlsx($spreadsheet);
-        //ob_start();
-        //$writer->save('php://output');
-        //$content = ob_get_contents();
-        //ob_end_clean();
-
-        //$fruta = Excelmuestreo::downloadExcel($request->data,$cell_order_compras,$ruta);
-        //return $request->input('data');
-        //return url('assets/files/resultado.xlsx');
-        //return $fruta;
     }
 
-    public function import(Request $request)
+    public function importar(Request $request)
     {
         $this->validate($request, [
             'myfile' => 'mimes:xls,xlsx'
@@ -159,7 +149,6 @@ class MayorcompraController extends Controller
         $uso_id = $request->input('iduso');
         
         if($request->hasfile('myfile')){
-
             $ruta = Almacenamiento::guardarmuestrascompras($username,$request->file('myfile'));
             $archivo = new Archivo();
             $archivo->user_id = $user_id;
@@ -177,40 +166,21 @@ class MayorcompraController extends Controller
             sleep(1);
             // actually delete the folder itself
             Storage::deleteDirectory('public/'.$useremail.'/temporal');  
-            
-            //rmdir(storage_path('app/public/'.$useremail.'/temporal'));
-            //$data = DB::table('Mayorcompras')->get();
-            //report_xl_compras`(_impMin int , _impMax int, _equi int, _tipoDoc varchar(9))
-            //$impMin = $request->input('importeminimo');
-            //$impMax = $request->input('importemaximo');
-            //$comparacion = $request->input('comparacion');
-            //$tipo = $request->input('tipocomprobante');
-            //$cantidad = $request->input('cantidad');
-            //$reporte = DB::select('call report_xl_compras(?, ?, ?, ?, ?, ?, ?)',[$impMin,$impMax,$cantidad,$comparacion,$tipo,$uso_id,$id_archivo]);
-            //session(['datacompras' => $reporte]);
             //return response()->json($reporte,200);
             return $archivo;
-        } else {
-            //$reporte = 'Debe adjuntar un archivo';
-            //return response()->json($reporte,200);
-        }        
+        }    
     }
 
     public function filtrar(Request $request)
     {
-        $this->validate($request, [
-            'myfile' => 'mimes:xls,xlsx'
-        ]);
-
         $uso_id = $request->input('iduso');
-        
         $id_archivo = $request->input('id_archivo');
         $impMin = $request->input('importeminimo');
         $impMax = $request->input('importemaximo');
         $comparacion = $request->input('comparacion');
         $tipo = $request->input('tipocomprobante');
         $cantidad = $request->input('cantidad');
-
+        
         $reporte = DB::select('call report_xl_compras(?, ?, ?, ?, ?, ?, ?)',[$impMin,$impMax,$cantidad,$comparacion,$tipo,$uso_id,$id_archivo]);
         
         session(['datacompras' => $reporte]);

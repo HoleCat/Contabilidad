@@ -9,93 +9,42 @@ function eventosactivos(){
 		filelabel.innerHTML = filename;
 		console.log(filename);
 	});
-	$('#btn-exportar-mayoractivos').click(function(e){
-		exportarmayoractivos();
-	});
-}
-
-function confirmartabla(hola) {
-	dataactivos = hola;
-	console.log('tabla cargada');
-}
-
-var identificadoractivos = 0;
-
-var botonesactivos = [
-	{
-		texto: '<i class="fas fa-trash-alt"></i>',
-		accion: 'borrardetalleliquidacion',
-		ruta: '/Destroy/Tuvieja',
-		id: 0
-	}
-]
-
-$(function(){
-	creartabla('table table-responsive','tablaactivos','#formactivos','#divactivostable','/Activos/Importar',cabeceraactivos,true,confirmartabla,botonesactivos,identificadoractivos); 
-})
-
-function exportarmayoractivos() {
-	console.log(JSON.stringify(dataactivos));
-	console.log(dataactivos);
-	var formdata = new FormData();
-	formdata.set('data',JSON.stringify(dataactivos));
-	$.ajax({
-		url: '/ExportExcelCompra',
-		type: 'POST',
-		data: formdata,
-		processData: false,
-		contentType: false,
-		success: function(data){
-			console.log(data)
-			/*let link = document.createElement('a');
-			link.setAttribute('href',data);
-			link.click();*/
+	$('#formcargaactivos').submit(function(event){
+		event.preventDefault();
+		function setarchivo(data) {
+			var idarchivo = data.id;
+			asignarvalor('#idarchivoactivos',idarchivo);
 		}
-	}).done(function(){
-		
+		cargararchivo('#formcargaactivos','#cargaactivosfile','/Activos/Importar',setarchivo);
+    });
+    $('#formfiltroactivos').submit(function(event){
+		event.preventDefault();
+		let botonescompras = [
+			{
+				texto: '<i class="fas fa-trash-alt"></i>',
+				accion: 'borrardetalleliquidacion',
+				ruta: '/Destroy/Tuvieja',
+				id_columnname: 0
+			}
+		]
+		let form = document.querySelector('#formfiltroactivos');
+		let formdata = new FormData(form);
+        let columnas = ['id','IdUso','IdArchivo','Codigo','CuentaContable','Descipcion','Marca','Modelo','NumeroSeriePlaca','CostoFin','Adquisicion','Mejoras'
+        ,'RetirosBajas','Otros','ValorHistorico','AjusteInflacion','ValorAjustado'
+        ,'CostoNetoIni','FecAdquisicion','FecInicio','Metodo','NroDoc','PorcDepreciacion','DepreAcumulada','DepreEjercicio','DepreRelacionada','DepreOtros'
+        ,'DepreHistorico','DepreAjusInflacion','DepreAcuInflacion','CostoHistorico','DepreAcuTributaria','CostoNetoIniTributaria','DepreEjercicioTributaria'
+        ,'FecBaja','created_at','updated_at','RATIO','DEPRESIACION'];
+        let cabecera = ['id','IdUso','IdArchivo','Codigo','CuentaContable','Descipcion','Marca','Modelo','NumeroSeriePlaca','CostoFin','Adquisicion','Mejoras',
+        'RetirosBajas','Otros','ValorHistorico','AjusteInflacion','ValorAjustado'
+        ,'CostoNetoIni','FecAdquisicion','FecInicio','Metodo','NroDoc','PorcDepreciacion','DepreAcumulada','DepreEjercicio','DepreRelacionada','DepreOtros'
+        ,'DepreHistorico','DepreAjusInflacion','DepreAcuInflacion','CostoHistorico','DepreAcuTributaria','CostoNetoIniTributaria','DepreEjercicioTributaria'
+        ,'FecBaja','created_at','updated_at','RATIO','DEPRESIACION','OPCIONES'];
+		creartablaone(formdata,'#cargafiltroactivos','table table-bordered table-responsive','tablaactivos','#divactivostable','/Activos/Filtrar',cabecera,columnas,true,confirmartabla,botonescompras);
 	});
 }
 
-var cabeceraactivos = [
-    'id'
-    ,'IdUso'
-    ,'IdArchivo'
-    ,'Codigo'
-    ,'CuentaContable'
-    ,'Descipcion'
-    ,'Marca'
-    ,'Modelo'
-    ,'NumeroSeriePlaca'
-    ,'CostoFin'
-    ,'Adquisicion'
-    ,'Mejoras'
-    ,'RetirosBajas'
-    ,'Otros'
-    ,'ValorHistorico'
-    ,'AjusteInflacion'
-    ,'ValorAjustado'
-    ,'CostoNetoIni'
-    ,'FecAdquisicion'
-    ,'FecInicio'
-    ,'Metodo'
-    ,'NroDoc'
-    ,'PorcDepreciacion'
-    ,'DepreAcumulada'
-    ,'DepreEjercicio'
-    ,'DepreRelacionada'
-    ,'DepreOtros'
-    ,'DepreHistorico'
-    ,'DepreAjusInflacion'
-    ,'DepreAcuInflacion'
-    ,'CostoHistorico'
-    ,'DepreAcuTributaria'
-    ,'CostoNetoIniTributaria'
-    ,'DepreEjercicioTributaria'
-    ,'FecBaja'
-    ,'created_at'
-    ,'updated_at'
-    ,'RATIO'
-    ,'DEPRESIACION'    
-]
+function confirmartabla() {
+    console.log('tabla filtro activos cargada');
+}
 
 

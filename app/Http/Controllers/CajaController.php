@@ -2,11 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Clase\Modelosgenerales\Sistemacontable;
 use App\Clases\Almacenamiento;
 use App\Clases\Caja\Aprobador;
 use App\Clases\Caja\Cajachica;
 use App\Clases\Caja\LiquidacionDetalle;
 use App\Clases\Modelosgenerales\Archivo;
+use App\clases\modelosgenerales\Codigocontable;
+use App\Clases\Modelosgenerales\Comprobante;
+use App\clases\modelosgenerales\Dni;
+use App\Clases\Modelosgenerales\Moneda;
 use App\Clases\Uso;
 use App\Rendirpago;
 use Barryvdh\DomPDF\Facade as PDF;
@@ -98,12 +103,13 @@ class CajaController extends Controller
         $codigocontable = DB::table('codigocontables')->get();
         $monedas = DB::table('monedas')->get();
         $centrocostos = DB::table('centrocostos')->get();
+        $sistemas = DB::table('sistemacontables')->get();
         if($request->input('servicio') == "cajachica")
         {
-            return view('modules.caja.cajachica',['centrocostos'=>$centrocostos,'monedas'=>$monedas,'uso'=>$uso,'liquidacion'=>$liquidacion,'documentos'=>$tiposdocumento,'codigocontable'=>$codigocontable]);
+            return view('modules.caja.cajachica',['sistemas'=>$sistemas,'centrocostos'=>$centrocostos,'monedas'=>$monedas,'uso'=>$uso,'liquidacion'=>$liquidacion,'documentos'=>$tiposdocumento,'codigocontable'=>$codigocontable]);
         }
         else {
-            return view('modules.caja.rendirpago',['centrocostos'=>$centrocostos,'monedas'=>$monedas,'uso'=>$uso,'liquidacion'=>$liquidacion,'documentos'=>$tiposdocumento,'codigocontable'=>$codigocontable]);
+            return view('modules.caja.rendirpago',['sistemas'=>$sistemas,'centrocostos'=>$centrocostos,'monedas'=>$monedas,'uso'=>$uso,'liquidacion'=>$liquidacion,'documentos'=>$tiposdocumento,'codigocontable'=>$codigocontable]);
         }
     }
 
@@ -116,7 +122,8 @@ class CajaController extends Controller
         $liquidacion = LiquidacionDetalle::firstWhere('uso_id', $id);
         $iduso = $liquidacion->uso_id;
         $uso = Uso::firstWhere('id', $iduso);
-        return view('modules.caja.cajachica',['centrocostos'=>$centrocostos,'monedas'=>$monedas,'uso'=>$uso,'liquidacion'=>$liquidacion,'documentos'=>$tiposdocumento,'codigocontable'=>$codigocontable]);
+        $sistemas = DB::table('sistemacontables')->get();
+        return view('modules.caja.cajachica',['sistemas'=>$sistemas,'centrocostos'=>$centrocostos,'monedas'=>$monedas,'uso'=>$uso,'liquidacion'=>$liquidacion,'documentos'=>$tiposdocumento,'codigocontable'=>$codigocontable]);
     }
 
     public function cajachicainsert(Request $request) {
@@ -180,7 +187,8 @@ class CajaController extends Controller
         $liquidacion = LiquidacionDetalle::firstWhere('uso_id', $id);
         $iduso = $liquidacion->uso_id;
         $uso = Uso::firstWhere('id', $iduso);
-        return view('modules.caja.rendirpago',['centrocostos'=>$centrocostos,'monedas'=>$monedas,'uso'=>$uso,'liquidacion'=>$liquidacion,'documentos'=>$tiposdocumento,'codigocontable'=>$codigocontable]);
+        $sistemas = DB::table('sistemacontables')->get();
+        return view('modules.caja.rendirpago',['sistemas'=>$sistemas,'centrocostos'=>$centrocostos,'monedas'=>$monedas,'uso'=>$uso,'liquidacion'=>$liquidacion,'documentos'=>$tiposdocumento,'codigocontable'=>$codigocontable]);
     }
 
     public function rendirpagoinsert(Request $request) {
@@ -238,6 +246,7 @@ class CajaController extends Controller
         $user = Auth::user();
         $date = Carbon::now()->format('d-m-Y');
         $aprobador = Aprobador::firstWhere('id','=',$liquidaciondetalle->aprobador_id);
+        $numeracion = $request->codigo;
 
         $tipo = $liquidaciondetalle->servicio;
         if($tipo=='rendirpago'){
@@ -246,8 +255,180 @@ class CajaController extends Controller
             $data = DB::table('cajachicas')->where('liquidacion_id','=',$liquidaciondetalle->id)->get();
         }
         
-        $pdf = PDF::loadView('modules.caja.pdfliquidacion', ['correo'=>$correo,'asunto'=>$asunto, 'aprobador'=>$aprobador,'liquidaciondetalle'=>$liquidaciondetalle, 'date'=>$date,'user'=>$user,'data' => $data]); 
+        $pdf = PDF::loadView('modules.caja.pdfliquidacion', ['numeracion'=>$numeracion,'correo'=>$correo,'asunto'=>$asunto, 'aprobador'=>$aprobador,'liquidaciondetalle'=>$liquidaciondetalle, 'date'=>$date,'user'=>$user,'data' => $data]); 
 
+        $template_path = public_path('/assets/files/cajatemplate.xlsx');
+        $spreadsheet = IOFactory::load($template_path);
+
+        $cont_1 = 2;
+
+
+        $sistema = Sistemacontable::firstWhere('id','=',$request->sistema);
+
+        foreach ($data as $reg) {
+            $comprobante = Comprobante::firstWhere('id','=',$reg->tipodocumento);
+            $moneda = Moneda::firstWhere('id','=',$reg->moneda);
+            $contabilidad = Codigocontable::firstWhere('id','=',$reg->contabilidad);
+            $i = 9;
+                $cellA = 'A'.$i;
+                $cellB = 'B'.$i;
+                $cellC = 'C'.$i;
+                $cellD = 'D'.$i;
+                $cellE = 'E'.$i;
+                $cellF = 'G'.$i;
+                $cellG = 'G'.$i;
+                $cellH = 'H'.$i;
+                $cellI = 'I'.$i;
+                $cellJ = 'J'.$i;
+                $cellK = 'K'.$i;
+                $cellL = 'L'.$i;
+                $cellM = 'M'.$i;
+                $cellN = 'N'.$i;
+                $cellO = 'O'.$i;
+                $cellP = 'P'.$i;
+                $cellQ = 'Q'.$i;
+                $cellR = 'R'.$i;
+                $cellS = 'S'.$i;
+                $cellT = 'T'.$i;
+                $cellU = 'U'.$i;
+                $cellV = 'V'.$i;
+                $cellW = 'W'.$i;
+                $cellX = 'X'.$i;
+                $cellY = 'Y'.$i;
+                $cellZ = 'Z'.$i;
+                $cellAA = 'AA'.$i;
+                $cellAB = 'AB'.$i;
+                $cellAC = 'AC'.$i;
+                $cellAD = 'AD'.$i;
+                $cellAE = 'AE'.$i;
+                $cellAG = 'AG'.$i;
+                $cellAF = 'AF'.$i;
+                $cellAH = 'AH'.$i;
+                $cellAI = 'AI'.$i;
+                $cellAJ = 'AJ'.$i;
+                $cellAK = 'AK'.$i;
+                $cellAL = 'AL'.$i;
+                $cellAM = 'AM'.$i;
+                $cellAN = 'AN'.$i;
+                $cellAO = 'AO'.$i;
+                
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellA, $sistema->MANDANTE);
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellB, $sistema->INTERFAZ);
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellC, $reg->fecha);
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellD, $sistema->CORRELAT);
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellE, $sistema->NITEM);
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellF, $sistema->BUKRS);
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellG, $comprobante->tipodocumento);
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellH, $moneda->descripcion);
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellI, $reg->fecha);
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellJ, $reg->fecha);
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellK, $reg->fecha);
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellL, $reg->ruc);
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellM, $liquidaciondetalle->concepto);
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellN, $sistema->BUPLA);
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellO, $sistema->NEWBS_ORIGEN);
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellP, $reg->ruc);
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellQ, $sistema->NEWUM);
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellR, $sistema->NEWBK);
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellS, $reg->monto*10);
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellT, $sistema->FWBAS);
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellU, $sistema->MWSKZ);
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellV, $sistema->GSBER);
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellW, $sistema->KOSTL);
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellX, $sistema->AUFNR);
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellY, $sistema->ZTERM);
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellZ, $liquidaciondetalle->concepto);
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellAA, $liquidaciondetalle->concepto);
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellAB, $sistema->VBUND);
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellAC, $sistema->XREF1);
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellAD, $sistema->XREF2);
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellAE, $sistema->XREF3);
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellAF, $sistema->VALUT);
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellAG, $sistema->XMWST);
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellAH, $sistema->ZLSPR);
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellAI, $sistema->ZFBDT);
+            $i++;
+
+            $cellA = 'A'.$i;
+                $cellB = 'B'.$i;
+                $cellC = 'C'.$i;
+                $cellD = 'D'.$i;
+                $cellE = 'E'.$i;
+                $cellF = 'G'.$i;
+                $cellG = 'G'.$i;
+                $cellH = 'H'.$i;
+                $cellI = 'I'.$i;
+                $cellJ = 'J'.$i;
+                $cellK = 'K'.$i;
+                $cellL = 'L'.$i;
+                $cellM = 'M'.$i;
+                $cellN = 'N'.$i;
+                $cellO = 'O'.$i;
+                $cellP = 'P'.$i;
+                $cellQ = 'Q'.$i;
+                $cellR = 'R'.$i;
+                $cellS = 'S'.$i;
+                $cellT = 'T'.$i;
+                $cellU = 'U'.$i;
+                $cellV = 'V'.$i;
+                $cellW = 'W'.$i;
+                $cellX = 'X'.$i;
+                $cellY = 'Y'.$i;
+                $cellZ = 'Z'.$i;
+                $cellAA = 'AA'.$i;
+                $cellAB = 'AB'.$i;
+                $cellAC = 'AC'.$i;
+                $cellAD = 'AD'.$i;
+                $cellAE = 'AE'.$i;
+                $cellAG = 'AG'.$i;
+                $cellAF = 'AF'.$i;
+                $cellAH = 'AH'.$i;
+                $cellAI = 'AI'.$i;
+                $cellAJ = 'AJ'.$i;
+                $cellAK = 'AK'.$i;
+                $cellAL = 'AL'.$i;
+                $cellAM = 'AM'.$i;
+                $cellAN = 'AN'.$i;
+                $cellAO = 'AO'.$i;
+
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellA, $sistema->MANDANTE);
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellB, $sistema->INTERFAZ);
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellC, $reg->fecha);
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellD, $sistema->CORRELAT);
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellE, $sistema->NITEM);
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellF, $sistema->BUKRS);
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellG, $comprobante->tipodocumento);
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellH, $moneda->descripcion);
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellI, $reg->fecha);
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellJ, $reg->fecha);
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellK, $reg->fecha);
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellL, $reg->ruc);
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellM, $liquidaciondetalle->concepto);
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellN, $sistema->BUPLA);
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellO, $sistema->NEWBS_PROV);
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellP, $contabilidad->codigo);
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellQ, $sistema->NEWUM);
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellR, $sistema->NEWBK);
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellS, $reg->monto*10);
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellT, $sistema->FWBAS);
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellU, $sistema->MWSKZ);
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellV, $sistema->GSBER);
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellW, $sistema->KOSTL);
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellX, $sistema->AUFNR);
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellY, $sistema->ZTERM);
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellZ, $liquidaciondetalle->concepto);
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellAA, $liquidaciondetalle->concepto);
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellAB, $sistema->VBUND);
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellAC, $sistema->XREF1);
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellAD, $sistema->XREF2);
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellAE, $sistema->XREF3);
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellAF, $sistema->VALUT);
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellAG, $sistema->XMWST);
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellAH, $sistema->ZLSPR);
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellAI, $sistema->ZFBDT);
+            $i++;
+        }
+        
         if($request->mail)
         {
             $content = $pdf->download()->getOriginalContent();
@@ -267,6 +448,25 @@ class CajaController extends Controller
             $archivo->ruta = $ruta;
             $archivo->save();
             $id_archivo = $archivo->id;
+           
+            //header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+            //header('Content-Disposition: attachment;filename="REPORTE.xlsx"');
+            //header('Cache-Control: max-age=0');
+            // If you're serving to IE 9, then the following may be needed
+            //header('Cache-Control: max-age=1');
+            $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
+            ob_start();
+            $writer->save('php://output');
+            $content = ob_get_contents();
+            ob_end_clean();
+            $filename = 'report';
+            $exe = '.xlsx';
+            $unique_name = $filename.time().$exe;
+            $ruta2 = Storage::put('public/caja/'.$user->name.'/'.$unique_name,$content);
+
+            $ruta2 = public_path('Storage/caja/'.$user->name.'/');
+            
+            $ruta2 = $ruta2.$unique_name;
 
             $info = array(
                 'aprobador' => $aprobador->name.' '.$aprobador->apellido,
@@ -274,9 +474,10 @@ class CajaController extends Controller
                 'telefono' => $user->telefono,
                 'correo' => $user->mail,
                 'fecha' => $date,
-                'ruta' => $ruta
+                'ruta' => $ruta,
+                'ruta2' => $ruta2,
             );
-            
+
             Mail::send('modules.caja.mail',$info,function($message){
                 $message->from('201602035x@gmail.com','Contadorapp');
                 $message->to('jorge.hospinal@yahoo.com')->subject('Reporte de caja');
@@ -287,6 +488,8 @@ class CajaController extends Controller
 
         }
         
+        
+
         return $pdf->download('medium.pdf');
     }
 }

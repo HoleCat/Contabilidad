@@ -4,6 +4,9 @@
 
 </head>
 <style>
+    .letras-table-xl {
+        font-size: 20px;
+    }
     .letras-table {
         font-size: 10px;
     }
@@ -353,14 +356,30 @@
         border: 0;
     }
 
-    .no-border {
-        border: none !important
+    .no-border * {
+        border: none !important;
+        border-color: rgba(0, 0, 0, 0) !important;
+    }
+
+    .text-left * {
+        text-align: left
     }
 </style>
 <body>
     <div id="app">
         <div class="col-12 py-5"></div>
         <div class="container-fluid">
+            <div class="row">
+                <div class="col-12">
+                    <table class="table text-left no-border letras-table-xl">
+                        <thead>
+                            <tr>
+                                <th>EMPRESA : EMPRESA</th><th>NUMERACION : {{$numeracion}}</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
             <div class="row">
                 <div class="col-12">
                     @if ($liquidaciondetalle->servicio == 'cajachica')
@@ -407,11 +426,11 @@
                         </tbody>
                     </table>
                     <hr>
-                    <table class="table letras-table">
+                    <table class="table letras-table no-border">
                         <tbody>
-                            <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td>MONTO</td><td>{{$liquidaciondetalle->monto}}</td></tr>
-                            <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td>MONTO USADO</td><td>{{$liquidaciondetalle->liquidacion}}</td></tr>
-                            <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td>NETO</td><td>{{$liquidaciondetalle->neto}}</td></tr>
+                            <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td>MONTO</td><td>: {{$liquidaciondetalle->monto}}</td></tr>
+                            <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td>MONTO USADO</td><td>: {{$liquidaciondetalle->liquidacion}}</td></tr>
+                            <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td>NETO</td><td>: {{$liquidaciondetalle->neto}}</td></tr>
                         </tbody>
                     </table>
                 </div>

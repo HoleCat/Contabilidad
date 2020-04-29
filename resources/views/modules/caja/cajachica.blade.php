@@ -4,26 +4,6 @@
         <h3 class="py-3">CALCULO DE CAJA CHICA</h1>
     </div>
     <div class="col-12">
-        <form action="/Caja/Cajachica/Exportar">
-            <div class="d-flex flex-wrap col-xl-6 col-md-8 col-xs-12 mx-auto">
-                <div class="form-group col">
-                    <input class="form-control" type="mail" name="correo" placeholder="CORREO">
-                </div>
-                <div class="form-group col">
-                    <input class="form-control" type="text" name="asunto" placeholder="ASUNTO">
-                </div>
-                <div class="form-group col text-right">
-                    <input type="hidden" name="uso_id" value="{{ $uso->id }}">
-                    <input class="btn btn-success" type="submit" value="EXPORTAR">
-                    <div class="form-check">
-                        <input name="mail" class="form-check-input" type="checkbox">
-                        <label for="form-check-label">enviar mail</label>
-                    </div>
-                </div>
-            </div>
-        </form>
-    </div>
-    <div class="col-12">
         <div class="col-xl-12 col-md-12 col-sm-12 col-xs-12">
             <form id="formcajachica">
                 <input type="hidden" id="liquidaciondetalle_id" name="liquidaciondetalle_id" value="{{ $liquidacion->id }}">
@@ -137,7 +117,48 @@
                 </div>
             </div>
         </div>
-        
+        <div class="jumbotron col-12 text-left py-3">
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalexportarcaja">
+                Iniciar exportacion
+            </button>
+            @extends('modules.caja.modalexportar')
+    
+            @section('content')
+            <form action="/Caja/Cajachica/Exportar">
+                <div class="col-12 mx-auto">
+                    <div class="form-group">
+                        <label>CODIGO DEL DOCUMENTO</label>
+                        <input class="form-control" type="mail" name="codigo" placeholder="NRO COD">
+                    </div>
+                    <div class="form-group">
+                        <label>DESTINATARIO</label>
+                        <input class="form-control" type="mail" name="correo" placeholder="CORREO">
+                    </div>
+                    <div class="form-group">
+                        <label>ASUNTO</label>
+                        <input class="form-control" type="text" name="asunto" placeholder="ASUNTO">
+                    </div>
+                    <div class="form-group">
+                        <label>SISTEMA CONTABLE</label>
+                        <select name="sistema" class="custom-select">
+                            <option selected>seleccione..</option>
+                            @foreach ($sistemas as $sistemas)
+                            <option value="{{ $sistemas->id }}">{{ $sistemas->codigo }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="form-group text-right">
+                        <input type="hidden" name="uso_id" value="66">
+                        <input class="btn btn-success" type="submit" value="EXPORTAR">
+                        <div class="form-check">
+                            <input name="mail" class="form-check-input" type="checkbox">
+                            <label for="form-check-label">enviar mail</label>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            @endsection
+        </div>
         <div id="divtablacajachica" class="col-12">
             
         </div>

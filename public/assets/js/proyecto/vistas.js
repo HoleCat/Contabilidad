@@ -34,6 +34,9 @@ function loadmodule()   {
     $('#opcion-caja').click(function(e){
         getview('#content','/Caja/Nuevo', confirmacion);
     });
+    $('#opcion-xml').click(function(e){
+        getview('#content','/Xml/Nuevo', confirmacion);
+    });
 }
 
 function setview(detonador,contenedor,ruta) {

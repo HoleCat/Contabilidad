@@ -9,17 +9,19 @@ function eventosbalance(){
 		filelabel.innerHTML = filename;
 		console.log(filename);
 	});
-	$('#btn-exportar-mayorbalance').click(function(e){
-		exportarmayorbalance();
-	});
+	$('#formcargabalance').submit(function(event){
+		event.preventDefault();
+		function setarchivo(data) {
+			console.log(data);
+		}
+		cargararchivo('#formcargabalance','#cargabalancefile','/Balance/Importar',setarchivo);
+    });
 }
 
 function confirmartablabalance(hola) {
 	databalance = hola;
 	console.log('tabla cargada balance');
 }
-
-var identificadorbalance = 0;
 
 var botonesbalance = [
 	{
@@ -29,10 +31,6 @@ var botonesbalance = [
 		id: 0
 	}
 ]
-
-$(function(){
-	creartabla('table table-responsive','tablabalance','#formbalance','#divbalancetable','/Balance/Importar',cabecerabalance,true,confirmartablabalance,botonesbalance,identificadorbalance); 
-})
 
 function exportarmayorbalance() {
 	console.log(JSON.stringify(databalance));

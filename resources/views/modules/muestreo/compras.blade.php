@@ -32,13 +32,13 @@
         <h5>2. Filtra la data</h5>
         <div class="row">
             <div class="col-xl-3 col-md-4 col-sm-12 col-xs-12">
-                <form id="formcompras" class="text-center">
+                <form id="formfiltrocompras" class="text-center">
                     <input type="hidden" name="iduso" value="{{$uso->id}}">
                     <input type="hidden" id="idarchivocompras" name="id_archivo" value="">
                     <div class="form-group text-left d-flex">
                         <input type="submit" class="btn btn-primary" value="FILTRAR">
-                        <div class="spinner-border text-primary mx-2" role="status">
-                            <span class="sr-only">Loading...</span>
+                        <div id="cargafiltrocompras">
+
                         </div>
                     </div>
                     <div class="d-flex flex-wrap text-left px-0">

@@ -10,6 +10,7 @@ use App\Imports\ActivofijosImport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
 
 class ActivofijoController extends Controller
@@ -90,7 +91,7 @@ class ActivofijoController extends Controller
         //
     }
 
-    public function import(Request $request)
+    public function importar(Request $request)
     {
         $this->validate($request, [
             'myfile' => 'mimes:xls,xlsx'
@@ -98,51 +99,46 @@ class ActivofijoController extends Controller
 
         $user_id = Auth::user()->id;
         $username = Auth::user()->name;
+        $useremail = Auth::user()->email;
         $uso_id = $request->input('iduso');
-        if($request->input('flag') == 0){
+        
+        if($request->hasfile('myfile')){
 
-            $json_data = session('dataactivos');
+            $ruta = Almacenamiento::guardarmuestrascompras($username,$request->file('myfile'));
+            $archivo = new Archivo();
+            $archivo->user_id = $user_id;
+            $archivo->uso_id = $uso_id;
+            $archivo->ruta = $ruta;
+            $archivo->save();
+            $id_archivo = $archivo->id;
 
-            $id_archivo = $request->input('idarchivo');
-            //$impMin = $request->input('importeminimo');
-            $impMax = $request->input('importemaximo');
-            $comparacion = $request->input('comparacion');
-            $tipo = $request->input('tipocomprobante');
-            //$reporte = DB::select('call report_xl_compras(?, ?, ?, ?, ?, ?)',[$impMin,$impMax,$comparacion,$tipo,$id_archivo,$uso_id]);
-            return response()->json($json_data,200);
-        } else {
-            if($request->hasfile('myfile')){
+            Excelmuestreo::aumentarcolumnasdefault($ruta,$uso_id,$id_archivo);
+        
+            Excel::import(new ActivofijosImport, $ruta);
 
-                $ruta = Almacenamiento::guardaractivos($username,$request->file('myfile'));
-                $archivo = new Archivo();
-                $archivo->user_id = $user_id;
-                $archivo->uso_id = $uso_id;
-                $archivo->ruta = $ruta;
-                $archivo->save();
-                $id_archivo = $archivo->id;
-    
-                Excelmuestreo::aumentarcolumnasdefault($ruta,$uso_id,$id_archivo);
+            Storage::deleteDirectory('public/'.$useremail.'/temporal', true);
+            // sleep 1 second because of race condition with HD
+            sleep(1);
+            // actually delete the folder itself
+            Storage::deleteDirectory('public/'.$useremail.'/temporal');  
             
-                Excel::import(new ActivofijosImport, $ruta);
-                
-                $vchk = $request->input('check');
-                //report_xl_compras`(_impMin int , _impMax int, _equi int, _tipoDoc varchar(9))
-                $vcant = $request->input('cantidad');
-                $vdateIn = $request->input('fechainicial');
-                $vdateEnd = $request->input('fechafin');
-                
-                $reporte = DB::select('call calculos_activofijo(?, ?, ?)',[$vchk,$vcant,$vdateEnd]);
-                
-                session(['dataactivos' => $reporte]);
-
-                return response()->json($reporte,200);
-
-            } else {
-
-                $reporte = 'Debe adjuntar un archivo';
-                return response()->json($reporte,200);
-                
-            }
-        }
+            return $archivo;
+        }    
     }
+
+    public function filtrar(Request $request)
+    {
+        $uso_id = $request->input('iduso');
+        $id_archivo = $request->input('id_archivo');
+        $vchk = $request->input('check');
+        $vcant = $request->input('cantidad');
+        $vdateEnd = $request->input('fechafin');
+        
+        $reporte = DB::select('call calculos_activofijo(?, ?, ?)',[$vchk,$vcant,$vdateEnd]);
+        
+        session(['dataactivos' => $reporte]);
+
+        return $reporte; 
+    }
+    
 }

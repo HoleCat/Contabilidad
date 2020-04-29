@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Clases\Modelosgenerales\Empresa;
 use App\Userdata;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -90,10 +91,11 @@ class UserdataController extends Controller
         $user->save();
         $userdata->save();
 
-        $empresa = DB::table('empresas')->where('id','=',$userdata->empresa_id);
+        $empresa = DB::table('empresas')->firstWhere('id','=',$userdata->empresa_id);
         $aprobador = DB::table('aprobadors')->where('id','=',$userdata->aprobador_id);
+        $empresas = Empresa::get();
 
-        return ['user'=>$user,'userdata'=>$userdata,'aprobador'=>$aprobador,'empresa'=>$empresa];
+        return ['user'=>$user,'userdata'=>$userdata,'aprobador'=>$aprobador,'empresa'=>$empresa,'empresas'=>$empresas];
     }
 
     public function perfil(Request $request)
