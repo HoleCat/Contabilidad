@@ -33,12 +33,12 @@ function eventosactivos(){
         ,'RetirosBajas','Otros','ValorHistorico','AjusteInflacion','ValorAjustado'
         ,'CostoNetoIni','FecAdquisicion','FecInicio','Metodo','NroDoc','PorcDepreciacion','DepreAcumulada','DepreEjercicio','DepreRelacionada','DepreOtros'
         ,'DepreHistorico','DepreAjusInflacion','DepreAcuInflacion','CostoHistorico','DepreAcuTributaria','CostoNetoIniTributaria','DepreEjercicioTributaria'
-        ,'FecBaja','created_at','updated_at','RATIO','DEPRESIACION'];
+        ,'FecBaja','created_at','updated_at','RATIO','DEPRESIACION','DEPRESIACION_VALIDADA','ANALISISn1','ANALISISn2',];
         let cabecera = ['id','IdUso','IdArchivo','Codigo','CuentaContable','Descipcion','Marca','Modelo','NumeroSeriePlaca','CostoFin','Adquisicion','Mejoras',
         'RetirosBajas','Otros','ValorHistorico','AjusteInflacion','ValorAjustado'
         ,'CostoNetoIni','FecAdquisicion','FecInicio','Metodo','NroDoc','PorcDepreciacion','DepreAcumulada','DepreEjercicio','DepreRelacionada','DepreOtros'
         ,'DepreHistorico','DepreAjusInflacion','DepreAcuInflacion','CostoHistorico','DepreAcuTributaria','CostoNetoIniTributaria','DepreEjercicioTributaria'
-        ,'FecBaja','created_at','updated_at','RATIO','DEPRESIACION','OPCIONES'];
+        ,'FecBaja','created_at','updated_at','RATIO','DEPRESIACION','DEPRESIACION_VALIDADA','ANALISISn1','ANALISISn2','OPCIONES'];
 		creartablaone(formdata,'#cargafiltroactivos','table table-bordered table-responsive','tablaactivos','#divactivostable','/Activos/Filtrar',cabecera,columnas,true,confirmartabla,botonescompras);
 	});
 }

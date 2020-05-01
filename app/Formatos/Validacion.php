@@ -11,35 +11,44 @@ class Validacion extends Model
             return FALSE;
     
         $data = array();
+        $data2 = array();
+        $regex = "";
+        $regex_numeric = "/^[d\.]+$/";
+        $regex_alfanumeric = "/^[a-zA-Z\s\d]+$/";
+        $regex_alfa = "/^[a-zA-Z\s]+$/";
+        $regex_date = "/^([0-2][0-9]|(3)[0-1])(\/)(((0)[0-9])|((1)[0-2]))(\/)\d{4}$/";
+        
+        $rules = json_decode($rules);
+        //return $rules[0]->tipo;
         if (($handle = fopen($filename, 'r')) !== FALSE)
         {
             while (($row = fgetcsv($handle, 1000, $delimiter)) !== FALSE)
             {
-                $regex_numeric = "/^[1-9\.]+$/";
-                $regex_alfanumeric = "/^[a-zA-Z\s\d]+$/";
-                $regex_alfa = "/^[a-zA-Z\s]+$/";
-                $regex_date = "/^([0-2][0-9]|(3)[0-1])(\/)(((0)[0-9])|((1)[0-2]))(\/)\d{4}$/";
-                for ($i=0; $i < $rules; $i++) { 
-                    $orden = $rules[$i]['orden'];
-                    $tipo = $rules[$i]['tipo'];
-                    $minimo = $rules[$i]['minimo'];
-                    $maximo = $rules[$i]['maximo'];
-                    $estatico = $rules[$i]['estatico'];
-                    $mensaje = $rules[$i]['contenido'];
+                array_push($data2, $row); 
+                for ($i=0; $i < count($rules); $i++) { 
+                    $orden = $rules[$i]->orden;
+                    $tipo = $rules[$i]->tipo;
+                    $minimo = $rules[$i]->minimo;
+                    $maximo = $rules[$i]->maximo;
+                    $estatico = $rules[$i]->estatico;
+                    $mensaje = "";
 
-                    $regex = "";
+                    //$regex = "";
                     if($tipo == "NUMERICO") {
                         $regex = $regex_numeric;
                         $mensaje = "DEBE CONTENER SOLO NUMEROS";
-                    } else if($tipo == "ALFANUMERICO")
+                    }
+                    if($tipo == "ALFANUMERICO")
                     {
                         $regex = $regex_alfanumeric;
                         $mensaje = "DEBE CONTENER SOLO NUMEROS (SIN COMAS)";
-                    } else if($tipo == "ALFABETICO")
+                    }
+                    if($tipo == "ALFABETICO")
                     {
                         $regex = $regex_alfa;
                         $mensaje = "DEBE CONTENER SOLO LETRAS";
-                    } else if($tipo == "FECHA")
+                    }
+                    if($tipo == "FECHA")
                     {
                         $regex = $regex_date;
                         $mensaje = "FORMATO DE FECHA ESPERADO DD/MM/YYYY";
@@ -47,30 +56,40 @@ class Validacion extends Model
                     
                     if(preg_match($regex,$row[$orden]))
                     {
-                        if(strlen($row[$orden])>=$minimo && strlen($row[$orden])<=$maximo){
-                            $row[$orden] = $row[$orden];
-                        } else {
-                            if($maximo!='')
-                            {
-                                $row[$orden] = 'ERROR EN EL LARGO DEL CONTENIDO DEBE SER MAYOR A '.$minimo.'Y MENOR A '.$maximo;
+                        if($maximo!='' && $minimo!='')
+                        {
+                            if(strlen($row[$orden])>=$minimo && strlen($row[$orden])<=$maximo){
+                                $row[$orden] = $row[$orden];
+                            } else {
+                                $row[$orden] = 'ERROR EN EL LARGO DEL CONTENIDO DEBE SER MAYOR A '.$minimo.'Y MENOR A '.$maximo;    
                             }
-                            else if($minimo!='')
-                            {
+                        }
+                        else if($minimo!='' && $maximo=='')
+                        {
+                            if(strlen($row[$orden])>=$minimo){
+                                $row[$orden] = $row[$orden];
+                            } else {
                                 $row[$orden] = 'ERROR EN EL LARGO DEL CONTENIDO DEBE SER MAYOR A '.$minimo;
                             }
-                            else if($estatico!='')
-                            {
+                        }
+                        else if($estatico!='')
+                        {
+                            if(strlen($row[$orden])==$estatico){
+                                $row[$orden] = $row[$orden];
+                            } else {
                                 $row[$orden] = 'ERROR EN EL LARGO DEL CONTENIDO DEBE SER '.$estatico;
                             }
                         }
+                        
                     } else {
-                        $row[0] = $mensaje;
+                        $row[$orden] = $mensaje;
                     }
                 }
                 array_push($data, $row);
             }
             fclose($handle);
         }
+
         return $data;
     }
 }
