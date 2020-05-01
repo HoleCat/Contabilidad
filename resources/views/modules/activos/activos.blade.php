@@ -10,8 +10,7 @@
             <div class="col-12 d-flex px-0">
                 <div class="col-xl-6 col-md-7 col-sm-8 col-xs-10 pl-0">
                     <div class="form-group">
-                        <label>NOMBRE PARA EL ARCHIVO</label>
-                        <input type="text" class="form-control" name="nombrearchivo">
+                        <input placeholder="NOMBRE DE LA ACTIVIDAD" type="text" class="form-control" name="nombrearchivo">
                     </div>
                     <div class="custom-file px-1">
                         <input type="file" class="custom-file-input" id="activosfile" name="myfile">

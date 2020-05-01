@@ -41,7 +41,8 @@
     </div>
     <div class="jumbotron col-12 text-left py-3">
         <h5>3. Exportar resultado</h5>
-        <form action="/ExportExcelCompra" method="GET">
+        <form action="/Xml/Exportar" method="GET">
+            <input type="hidden" name="uso_id" value="{{$uso->id}}">
             <button type="submit" id="btn-exportar-mayorcompras" class="btn btn-warning">Exportar en excel</button>
         </form>
     </div>

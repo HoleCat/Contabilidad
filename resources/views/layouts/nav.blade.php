@@ -27,6 +27,9 @@
                     @endif
                 @else
                     <li class="nav-item">
+                        <a class="nav-link" id="nav-validador">Validador</a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" id="nav-muestreo">Muestreo</a>
                     </li>
                     <li class="nav-item">

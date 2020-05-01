@@ -1,6 +1,6 @@
 eventosxml();
 function eventosxml() {
-    let file = document.querySelector("#xml");
+        let file = document.querySelector("#xml");
         let form = document.querySelector("#formcargaxml");
         let btn = document.querySelector(".btn-send");
         let key = document.querySelector("meta[name='csrf-token']").content;
@@ -20,6 +20,55 @@ function eventosxml() {
             const res = data.currentTarget.response;
             console.log(res);
             const jData = JSON.parse(res);
+
+            let arr_ruc = [];
+            jData.map((value) => {
+                value["condicion"] = "";
+                if (arr_ruc.indexOf(value.ruc_proveedor) === -1) {
+                    arr_ruc.push(value.ruc_proveedor);
+                }
+            });
+            //webservice
+            
+            if (arr_ruc.length > 0) {
+                const tbl = document.querySelector(".grid-result");
+                for (let i = 0; i < arr_ruc.length; i++) {
+                    const element = arr_ruc[i];
+                    let url = `http://sunat.innovafashionperu.com/rucServices.php?nruc=${element}`;
+                    let req = new XMLHttpRequest();
+                    //req.responseType="json";
+                    req.open("GET", url);
+                    req.onload = function(){
+                        if (req.status === 200 && req.readyState === 4) {
+                            const jService = JSON.parse(req.responseText);
+                           if (jService.success === true) {
+                               const trs = tbl.querySelectorAll("tbody>tr");
+                               for (let i = 0; i < trs.length; i++) {
+                                   const tr = trs[i];
+                                   if (tr.children[4].textContent === jService.result.ruc) {
+                                    tr.children[12].textContent = jService.result.condicion;
+                                    if (jService.result.comprobante_electronico.length > 0) {
+                                        const cpes = jService.result.comprobante_electronico;
+                                        for (let j = 0; j < cpes.length; j++) {
+                                            const doc = cpes[j];
+                                            const cp = doc.substr(0, doc.indexOf(" "));
+                                            if (cp.substr(0, 1) === tr.children[2].textContent.substr(0, 1)) {
+                                             tr.children[13].textContent = doc;
+                                             break;
+                                            }
+                                        }
+                                    }
+                                   }
+                               }
+                           } else {
+                               console.log(JSON.parse(req.responseText));
+                           }
+                        }
+                    }
+                    req.send();
+                }
+            }
+
             let tr, td, table, div, footer, thead, tbody;
             
             div = document.querySelector(".grid-result");
@@ -30,6 +79,11 @@ function eventosxml() {
             table.appendChild(thead);
             tr = document.createElement("tr");
             thead.appendChild(tr);
+
+            td =document.createElement("td");
+            td.textContent =""; //auto increment
+            tr.appendChild(td);
+
             td =document.createElement("td");
             td.textContent ="CÓDIGO";
             tr.appendChild(td);
@@ -75,15 +129,27 @@ function eventosxml() {
             tr.appendChild(td);
 
             td =document.createElement("td");
-            td.textContent ="OPCIONES";
+            td.textContent ="CONDICIÓN";
             tr.appendChild(td);
 
+            td =document.createElement("td");
+            td.textContent ="EMISOR CPE";
+            tr.appendChild(td);
+
+            td =document.createElement("td");
+            td.textContent ="OPCIONES";
+            tr.appendChild(td);
             let suma=0;
 
             tbody = document.createElement('tbody');
-            jData.map((item) =>{
+            
+            jData.map((item, index) =>{
                 tr = document.createElement("tr");
 
+                td = document.createElement("td");
+                td.textContent = index + 1;
+                tr.appendChild(td);
+                
                 td = document.createElement("td");
                 td.textContent = item.codigo_doc;
                 tr.appendChild(td);
@@ -130,6 +196,14 @@ function eventosxml() {
                 suma += item.total;
 
                 td = document.createElement("td");
+                td.textContent = item.condicion;
+                tr.appendChild(td);
+
+                td = document.createElement("td");
+                td.textContent = "";
+                tr.appendChild(td);
+
+                td = document.createElement("td");
                 let btn = document.createElement('buttom');
                 btn.addEventListener("click", function(){
                     eliminarregistro('/Factura/Eliminar',item.id,transferComplete);
@@ -155,6 +229,57 @@ function eventosxml() {
         }
         function transferComplete(data){
             const res = data;
+
+            const jData = res;
+            
+            //get ruc
+            let arr_ruc = [];
+            jData.map((value) => {
+                value["condicion"] = "";
+                if (arr_ruc.indexOf(value.ruc_proveedor) === -1) {
+                    arr_ruc.push(value.ruc_proveedor);
+                }
+            });
+            //webservice
+            
+            if (arr_ruc.length > 0) {
+                const tbl = document.querySelector(".grid-result");
+                for (let i = 0; i < arr_ruc.length; i++) {
+                    const element = arr_ruc[i];
+                    let url = `http://sunat.innovafashionperu.com/rucServices.php?nruc=${element}`;
+                    let req = new XMLHttpRequest();
+                    req.open("GET", url);
+                    req.onload = function(){
+                        if (req.status === 200 && req.readyState === 4) {
+                            const jService = JSON.parse(req.responseText);
+                           if (jService.success === true) {
+                               const trs = tbl.querySelectorAll("tbody>tr");
+                               for (let i = 0; i < trs.length; i++) {
+                                   const tr = trs[i];
+                                   if (tr.children[4].textContent === jService.result.ruc) {
+                                    tr.children[12].textContent = jService.result.condicion;
+                                    if (jService.result.comprobante_electronico.length > 0) {
+                                        const cpes = jService.result.comprobante_electronico;
+                                        for (let j = 0; j < cpes.length; j++) {
+                                            const doc = cpes[j];
+                                            const cp = doc.substr(0, doc.indexOf(" "));
+                                            if (cp.substr(0, 1) === tr.children[2].textContent.substr(0, 1)) {
+                                             tr.children[13].textContent = doc;
+                                             break;
+                                            }
+                                        }
+                                    }
+                                   }
+                               }
+                           } else {
+                               console.log(JSON.parse(req.responseText));
+                           }
+                        }
+                    }
+                    req.send();
+                }
+            }
+
             let tr, td, table, div, footer, thead, tbody;
             
             div = document.querySelector(".grid-result");
@@ -165,6 +290,11 @@ function eventosxml() {
             table.appendChild(thead);
             tr = document.createElement("tr");
             thead.appendChild(tr);
+
+            td =document.createElement("td");
+            td.textContent =""; //auto increment
+            tr.appendChild(td);
+
             td =document.createElement("td");
             td.textContent ="CÓDIGO";
             tr.appendChild(td);
@@ -210,14 +340,26 @@ function eventosxml() {
             tr.appendChild(td);
 
             td =document.createElement("td");
+            td.textContent ="CONDICIÓN";
+            tr.appendChild(td);
+
+            td =document.createElement("td");
+            td.textContent ="EMISOR CPE";
+            tr.appendChild(td);
+
+            td =document.createElement("td");
             td.textContent ="OPCIONES";
             tr.appendChild(td);
 
             let suma=0;
 
             tbody = document.createElement('tbody');
-            res.map((item) =>{
+            res.map((item, index) =>{
                 tr = document.createElement("tr");
+
+                td = document.createElement("td");
+                td.textContent = index + 1;
+                tr.appendChild(td);
 
                 td = document.createElement("td");
                 td.textContent = item.codigo_doc;
@@ -262,6 +404,15 @@ function eventosxml() {
                 td = document.createElement("td");
                 td.textContent = item.total;
                 tr.appendChild(td);
+
+                td = document.createElement("td");
+                td.textContent = item.condicion;
+                tr.appendChild(td);
+
+                td = document.createElement("td");
+                td.textContent = "";
+                tr.appendChild(td);
+
                 suma += item.total;
 
                 td = document.createElement("td");

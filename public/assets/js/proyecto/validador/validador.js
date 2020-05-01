@@ -1,23 +1,26 @@
-eventoscompras();
+eventosvalidador();
 
-function eventoscompras(){
-	$('#comprasfile').change(function(e){
+function eventosvalidador(){
+	$('#validadorfile').change(function(e){
 		let filename = this.files[0].name;
-		let filelabel = document.querySelector('#compraslabel');
+		let filelabel = document.querySelector('#validadorlabel');
 		filelabel.innerHTML = filename;
 		console.log(filename);
 	});
-	$('#formcargacompras').submit(function(event){
+	$('#formcargavalidador').submit(function(event){
 		event.preventDefault();
-		function setarchivocompras(data) {
+		function setarchivovalidador(data) {
 			var idarchivo = data.id;
-			asignarvalor('#idarchivocompras',idarchivo);
-		}
-		cargararchivo('#formcargacompras','#cargacomprasfile','/ImportarExcelCompra',setarchivocompras);
+			asignarvalor('#idarchivovalidador',idarchivo);
+        }
+        function none() {
+            console.log('check validator update');
+        }
+		cargararchivo('#formcargavalidador','#cargavalidadorfile','/Validador/Importar',none);
 	});
-	$('#formfiltrocompras').submit(function(event){
+	/*$('#formfiltrovalidador').submit(function(event){
 		event.preventDefault();
-		let botonescompras = [
+		let botonesvalidador = [
 			{
 				texto: '<i class="fas fa-trash-alt"></i>',
 				accion: 'borrardetalleliquidacion',
@@ -25,7 +28,7 @@ function eventoscompras(){
 				id: 0
 			}
 		];
-		let form = document.querySelector('#formfiltrocompras');
+		let form = document.querySelector('#formfiltrovalidador');
 		let formdata = new FormData(form);
 		let columnas = ['NroDoc','cliente','Periodo','Correlativo','FecEmision','FecVenci','TipoComp','NumSerie',
 		'AnoDua','NumComp','NumTicket','TipoDoc','BIAG1','IGVIPM1','BIAG2','IGVIPM2','BIAG3','AdqGrava','IGVIPM3','AdqGrava','ISC',
@@ -35,23 +38,23 @@ function eventoscompras(){
 		'NumTicket','TipoDoc','NroDoc','Nombre','BIAG1','IGVIPM1','BIAG2','IGVIPM2','BIAG3','IGVIPM3','AdqGrava','ISC','Otros','Total',
 		'Moneda','TipoCam','FecOrigenMod','TipoCompMod','NumSerieMod','AnoDuaMod','NumSerComOriMod','FecConstDetrac','NumConstDetrac',
 		'Retencion','ClasifBi','Contrato','ErrorT1','ErrorT2','ErrorT3','ErrorT4','MedioPago','Estado','Opciones'];
-		creartablaone(formdata,'#cargafiltrocompras','table table-bordered table-responsive','tablacompras','#divcomprastable','/FiltrarExcelCompra',cabecera,columnas,true,confirmartabla,botonescompras);
+		creartablaone(formdata,'#cargafiltrovalidador','table table-bordered table-responsive','tablavalidador','#divvalidadortable','/FiltrarExcelCompra',cabecera,columnas,true,confirmartabla,botonesvalidador);
 	});
-	$('#btn-exportar-mayorcompras').click(function(e){
-		exportarmayorcompras();
-	});
+	$('#btn-exportar-mayorvalidador').click(function(e){
+		exportarmayorvalidador();
+	});*/
 }
 
 function confirmartabla(hola) {
-	datacompras = hola;
+	datavalidador = hola;
 	console.log('tabla cargada');
 }
 
-function exportarmayorcompras() {
-	console.log(JSON.stringify(datacompras));
-	console.log(datacompras);
+function exportarmayorvalidador() {
+	console.log(JSON.stringify(datavalidador));
+	console.log(datavalidador);
 	var formdata = new FormData();
-	formdata.set('data',JSON.stringify(datacompras));
+	formdata.set('data',JSON.stringify(datavalidador));
 	$.ajax({
 		url: '/ExportExcelCompra',
 		type: 'POST',
@@ -65,3 +68,4 @@ function exportarmayorcompras() {
 		
 	});
 }
+

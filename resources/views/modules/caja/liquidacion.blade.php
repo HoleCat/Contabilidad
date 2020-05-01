@@ -1,7 +1,7 @@
 <div class="pt-3 col-xl-10 col-md-10 col-sm-10 col-xs-11 mx-auto">
     @include('layouts.uso')
     <div class="col-12 text-center">
-        <h3 class="py-3">NUEVA LIQUIDACION</h1>
+        <h3 class="py-3">NUEVA LIQUIDACIÓN</h1>
     </div>
     <div class="col-12">
         <div class="col-xl-12 col-md-12 col-sm-12 col-xs-12">
@@ -10,11 +10,11 @@
                 <div class="col-12 d-flex flex-wrap px-0">
                     <div class="col-xl-6 col-md-6 col-sm-6 col-xs-12 px-1">
                         <div class="form-group my-0">
-                            <label>SERVICIO</label>
+                            <label>LIQUIDACIÓN</label>
                             <select name="servicio" class="custom-select">
                                 <option selected>-- Seleccion --</option>
                                 <option value="cajachica">CAJA CHICA</option>
-                                <option value="rendirpago">RENDIR PAGO</option>
+                                <option value="rendirpago">ENTREGA A RENDIR</option>
                             </select>
                             <small class="text-danger fade">Campo obligatorio</small>
                         </div>

@@ -305,8 +305,8 @@ class BalanceController extends Controller
             $sum_propiedad = Txtexportaciones::sumIf($yr, $array_data, "PROPIEDAD, PLANTA Y EQUIPO");
             $sum_intangibles = Txtexportaciones::sumIf($yr, $array_data, "INTANGIBLES");
             $spreadsheet->setActiveSheetIndex(0)
-                ->setCellValue($BG_col."24", $sum_efectivo)
-                ->setCellValue($BG_col."26", $sum_cuentas_por_cobrar_1)
+                ->setCellValue($BG_col."24", $sum_propiedad)
+                ->setCellValue($BG_col."26", $sum_intangibles)
                 ->setCellValue($BG_col."27", "=sum(".$BG_col."24:".$BG_col."26)")
                 ->setCellValue($BG_col."36", "=+".$BG_col."27+".$BG_col."18");
     
@@ -317,17 +317,17 @@ class BalanceController extends Controller
             $sum_cuentas_por_pagar = Txtexportaciones::sumIf($yr, $array_data, "CUENTAS POR PAGAR COMERCIALES");
             $sum_intercompany_por_pagar = Txtexportaciones::sumIf($yr, $array_data, "INTERCOMPANY POR PAGAR");
             $spreadsheet->setActiveSheetIndex(0)
-                ->setCellValue($BG_col_2."10", $sum_otras_cuentas)
-                ->setCellValue($BG_col_2."11", $sum_revisar)
-                ->setCellValue($BG_col_2."12", $sum_cuentas_por_pagar)
-                ->setCellValue($BG_col_2."14", $sum_intercompany_por_pagar)
+                ->setCellValue($BG_col_2."10", $sum_otras_cuentas*-1)
+                ->setCellValue($BG_col_2."11", $sum_revisar*-1)
+                ->setCellValue($BG_col_2."12", $sum_cuentas_por_pagar*-1)
+                ->setCellValue($BG_col_2."14", $sum_intercompany_por_pagar*-1)
                 ->setCellValue($BG_col_2."18", "=sum(".$BG_col_2."10:".$BG_col_2."14)");
     
             $sum_obligaciones_financieras = Txtexportaciones::sumIf($yr, $array_data, "OBLIGACIONES FINANCIERAS");
             $sum_activo_diferido = Txtexportaciones::sumIf($yr, $array_data, "ACTIVO DIFERIDO");
             $spreadsheet->setActiveSheetIndex(0)
-                ->setCellValue($BG_col_2."24", $sum_obligaciones_financieras)
-                ->setCellValue($BG_col_2."25", $sum_activo_diferido)
+                ->setCellValue($BG_col_2."24", $sum_obligaciones_financieras*-1)
+                ->setCellValue($BG_col_2."25", $sum_activo_diferido*-1)
                 ->setCellValue($BG_col_2."27", "=sum(".$BG_col_2."24:".$BG_col_2."25)");
     
             $sum_patrimonio = Txtexportaciones::sumIf($yr, $array_data, "PATRIMONIO");

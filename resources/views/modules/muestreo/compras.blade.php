@@ -1,7 +1,7 @@
 <div class="col-12">
     @include('layouts.uso')
     <div class="col-12 text-center">
-        <h3 class="py-3">IMPORTACION DE COMPRAS</h1>
+        <h3 class="py-3">MUESTRAS DEL REGISTRO DE COMPRAS</h1>
     </div>
     <div class="jumbotron col-12 text-left py-3">
         <h5>1. Importar archivo</h5>

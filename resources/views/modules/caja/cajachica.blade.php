@@ -25,13 +25,13 @@
                             <small class="text-danger fade">Campo obligatorio</small>
                         </div>
                         <div class="form-group my-0">
-                            <label >N° DOCUMENTO</label>
+                            <label >SERIE - N° DOCUMENTO</label>
                             <div class="col-12 d-flex flex-wrap px-0">
                                 <div class="col-6 px-0">
-                                    <input oninput="validacionunitariabasica('#codigodocumentocajachica','#validador-nrodocumento',3,5)" id="codigodocumentocajachica" placeholder="COD" name="codigodocumento" class="form-control" type="text">
+                                    <input oninput="validacionunitariabasica('#codigodocumentocajachica','#validador-nrodocumento',3,5)" id="codigodocumentocajachica" placeholder="F001" name="codigodocumento" class="form-control" type="text">
                                 </div>
                                 <div class="col-6 px-0">
-                                    <input oninput="validacionunitariabasica('#numerodocumentocajachica','#validador-nrodocumento',3,12)" id="numerodocumentocajachica" placeholder="NRO" name="documento" class="form-control" type="number">
+                                    <input oninput="validacionunitariabasica('#numerodocumentocajachica','#validador-nrodocumento',3,12)" id="numerodocumentocajachica" placeholder="00000001" name="documento" class="form-control" type="number">
                                 </div>
                             </div>
                             <small class="text-danger fade" id="validador-nrodocumento">Campo obligatorio</small>

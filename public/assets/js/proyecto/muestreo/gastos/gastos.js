@@ -9,6 +9,47 @@ function eventosgastos(){
 		filelabel.innerHTML = filename;
 		console.log(filename);
 	});
+	$('#formcargagastos').submit(function(event){
+		event.preventDefault();
+		function setarchivogastos(data) {
+			var idarchivo = data.id;
+			asignarvalor('#idarchivogastos',idarchivo);
+			console.log(idarchivo);
+		}
+		cargararchivo('#formcargagastos','#cargagastosfile','/ImportarExcelVentas',setarchivogastos);
+	});
+	$('#formfiltrogastos').submit(function(event){
+		event.preventDefault();
+		let botonesgastos = [
+			{
+				texto: '<i class="fas fa-trash-alt"></i>',
+				accion: 'borrardetalleliquidacion',
+				ruta: '/Destroy/Tuvieja',
+				id: 0
+			}
+		]
+		let form = document.querySelector('#formfiltrogastos');
+		let formdata = new FormData(form);
+		let cabecera = [
+			'NroDoc','cliente','IdUso','IdArchivo','Periodo','Correlativo',
+			'FecEmision','FecVenci','TipoComp','NumSerie','AnoDua','NumComp',
+			'NumTicket','TipoDoc','BIAG1','IGVIPM1','BIAG2','IGVIPM2','BIAG3',
+			'AdqGrava','IGVIPM3','AdqGrava','ISC','Otros','Total','Moneda',
+			'TipoCam','FecOrigenMod','TipoCompMod','NumSerieMod','AnoDuaMod',
+			'NumSerComOriMod','FecConstDetrac','NumConstDetrac','Retencion','ClasifBi',
+			'Contrato','ErrorT1','ErrorT2','ErrorT3','ErrorT4','MedioPago','Estado','Opciones'
+		];
+		let columnas = [
+			'NroDoc','cliente','IdUso','IdArchivo','Periodo','Correlativo',
+			'FecEmision','FecVenci','TipoComp','NumSerie','AnoDua','NumComp',
+			'NumTicket','TipoDoc','BIAG1','IGVIPM1','BIAG2','IGVIPM2','BIAG3',
+			'AdqGrava','IGVIPM3','AdqGrava','ISC','Otros','Total','Moneda',
+			'TipoCam','FecOrigenMod','TipoCompMod','NumSerieMod','AnoDuaMod',
+			'NumSerComOriMod','FecConstDetrac','NumConstDetrac','Retencion','ClasifBi',
+			'Contrato','ErrorT1','ErrorT2','ErrorT3','ErrorT4','MedioPago','Estado'
+		];
+		creartablaone(formdata,'#cargafiltrogastos','table table-bordered table-responsive','tablagastos','#divgastostable','/FiltrarExcelGastos',cabecera,columnas,true,confirmartabla,botonesgastos);
+	});
 	$('#btn-exportar-mayorgastos').click(function(e){
 		exportarmayorgastos();
 	});
@@ -18,21 +59,6 @@ function confirmartabla(hola) {
 	datagastos = hola;
 	console.log('tabla cargada');
 }
-
-var identificadorgastos = 0;
-
-var botonesgastos = [
-	{
-		texto: '<i class="fas fa-trash-alt"></i>',
-		accion: 'borrardetalleliquidacion',
-		ruta: '/Destroy/Tuvieja',
-		id: 0
-	}
-]
-
-$(function(){
-	creartabla('table table-responsive','tablagastos','#formgastos','#divgastostable','/ImportExcelGastos',cabeceragastos,true,confirmartabla,botonesgastos,identificadorgastos); 
-})
 
 function exportarmayorgastos() {
 	console.log(JSON.stringify(datagastos));
@@ -56,48 +82,3 @@ function exportarmayorgastos() {
 	});
 }
  
-var cabeceragastos = [
-	'NroDoc',
-	'cliente',
-	'IdUso',
-	'IdArchivo',
-	'Periodo',
-	'Correlativo',
-	'FecEmision',
-	'FecVenci',
-	'TipoComp',
-	'NumSerie',
-	'AnoDua',
-	'NumComp',
-	'NumTicket',
-	'TipoDoc',
-	'BIAG1',
-	'IGVIPM1',
-	'BIAG2',
-	'IGVIPM2',
-	'BIAG3',
-	'AdqGrava',
-	'IGVIPM3',
-	'AdqGrava',
-	'ISC',
-	'Otros',
-	'Total',
-	'Moneda',
-	'TipoCam',
-	'FecOrigenMod',
-	'TipoCompMod',
-	'NumSerieMod',
-	'AnoDuaMod',
-	'NumSerComOriMod',
-	'FecConstDetrac',
-	'NumConstDetrac',
-	'Retencion',
-	'ClasifBi',
-	'Contrato',
-	'ErrorT1',
-	'ErrorT2',
-	'ErrorT3',
-	'ErrorT4',
-	'MedioPago',
-	'Estado'
-];

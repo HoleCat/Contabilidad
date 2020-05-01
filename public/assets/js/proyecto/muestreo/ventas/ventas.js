@@ -9,6 +9,43 @@ function eventosventas(){
 		filelabel.innerHTML = filename;
 		console.log(filename);
 	});
+	$('#formcargaventas').submit(function(event){
+		event.preventDefault();
+		function setarchivoventas(data) {
+			var idarchivo = data.id;
+			asignarvalor('#idarchivoventas',idarchivo);
+			console.log(idarchivo);
+		}
+		cargararchivo('#formcargaventas','#cargaventasfile','/ImportarExcelVentas',setarchivoventas);
+	});
+	$('#formfiltroventas').submit(function(event){
+		event.preventDefault();
+		let botonesventas = [
+			{
+				texto: '<i class="fas fa-trash-alt"></i>',
+				accion: 'borrardetalleliquidacion',
+				ruta: '/Destroy/Tuvieja',
+				id: 0
+			}
+		]
+		let form = document.querySelector('#formfiltroventas');
+		let formdata = new FormData(form);
+		let cabecera = 
+		['IdUso','IdArchivo','Periodo','Correlativo','Ordenado',
+		'FecEmision','FecVenci','TipoComp','NumSerie','NumComp','NumTicket','TipoDoc',
+		'NroDoc','Nombre','Export','BI','Desci','IGVIPMBI','IGVIPMDesc','ImporteExo',
+		'ImporteIna','ISC','BIIGVAP','IGVAP','Otros','Total','Moneda','TipoCam',
+		'FecOrigenMod','TipoCompMod','NumSerieMod','NumDocMod','Contrato','ErrorT1',
+		'MedioPago','Estado','Opciones'];
+		let columnas = 
+		['IdUso','IdArchivo','Periodo','Correlativo','Ordenado',
+		'FecEmision','FecVenci','TipoComp','NumSerie','NumComp','NumTicket','TipoDoc',
+		'NroDoc','Nombre','Export','BI','Desci','IGVIPMBI','IGVIPMDesc','ImporteExo',
+		'ImporteIna','ISC','BIIGVAP','IGVAP','Otros','Total','Moneda','TipoCam',
+		'FecOrigenMod','TipoCompMod','NumSerieMod','NumDocMod','Contrato','ErrorT1',
+		'MedioPago','Estado'];
+		creartablaone(formdata,'#cargafiltroventas','table table-bordered table-responsive','tablaventas','#divventastable','/FiltrarExcelVentas',cabecera,columnas,true,confirmartabla,botonesventas);
+	});
 	$('#btn-exportar-mayorventas').click(function(e){
 		exportarmayorventas();
 	});
@@ -20,19 +57,6 @@ function confirmartabla(hola) {
 }
 
 var identificadorventas = 0;
-
-var botonesventas = [
-	{
-		texto: '<i class="fas fa-trash-alt"></i>',
-		accion: 'borrardetalleliquidacion',
-		ruta: '/Destroy/Tuvieja',
-		id: 0
-	}
-]
-
-$(function(){
-	creartabla('table table-responsive','tablaventas','#formventas','#divventastable','/ImportExcelVentas',cabeceraventas,true,confirmartabla,botonesventas,identificadorventas); 
-})
 
 function exportarmayorventas() {
 	console.log(JSON.stringify(dataventas));
@@ -55,42 +79,3 @@ function exportarmayorventas() {
 		
 	});
 }
- 
-var cabeceraventas = [
-	'IdUso',
-	'IdArchivo',
-	'Periodo',
-	'Correlativo',
-	'Ordenado',
-	'FecEmision',
-	'FecVenci',
-	'TipoComp',
-	'NumSerie',
-	'NumComp',
-	'NumTicket',
-	'TipoDoc',
-	'NroDoc',
-	'Nombre',
-	'Export',
-	'BI',
-	'Desci',
-	'IGVIPMBI',
-	'IGVIPMDesc',
-	'ImporteExo',
-	'ImporteIna',
-	'ISC',
-	'BIIGVAP',
-	'IGVAP',
-	'Otros',
-	'Total',
-	'Moneda',
-	'TipoCam',
-	'FecOrigenMod',
-	'TipoCompMod',
-	'NumSerieMod',
-	'NumDocMod',
-	'Contrato',
-	'ErrorT1',
-	'MedioPago',
-	'Estado'
-];

@@ -2,11 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Clase\Modelosgenerales\Sistemacontable;
+use App\Clases\Caja\Aprobador;
+use App\Clases\Modelosgenerales\Archivo;
 use App\Clases\Uso;
 use App\Clases\Xml\Factura;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class FacturaController extends Controller
 {
@@ -90,19 +97,42 @@ class FacturaController extends Controller
             $uso_id                    =    $request->uso_id;
             $usuario_id                =    Auth::user()->id;
             $codigo_doc                =    (string)$xml->xpath('//cbc:InvoiceTypeCode')[0];
-            $ruc_cliente               =    (string)$xml->xpath('//cac:AccountingCustomerParty//cac:Party//cac:PartyIdentification//cbc:ID')[0];
-            $razon_social_cliente      =    (string)$xml->xpath('//cac:AccountingCustomerParty//cac:Party//cac:PartyLegalEntity//cbc:RegistrationName')[0];
+            try {
+                $ruc_cliente               =    (string)$xml->xpath('//cac:AccountingCustomerParty//cac:Party//cac:PartyIdentification//cbc:ID')[0];
+            } catch (\Exception $e) {
+                $ruc_cliente               =    (string)$xml->xpath('//cac:AccountingCustomerParty//cbc:CustomerAssignedAccountID')[0];
+            }
 
-            $ruc_proveedor             =    (string)$xml->xpath('//cac:AccountingSupplierParty//cac:Party//cac:PartyIdentification//cbc:ID')[0];
-            $razon_social_proveedor    =    (string)$xml->xpath('//cac:AccountingSupplierParty//cac:Party//cac:PartyLegalEntity//cbc:RegistrationName')[0];
+            $razon_social_cliente          =    (string)$xml->xpath('//cac:AccountingCustomerParty//cac:Party//cac:PartyLegalEntity//cbc:RegistrationName')[0];
 
-            $ubigeo                    =    (string)$xml->xpath('//cac:AccountingCustomerParty//cac:Party//cac:PartyLegalEntity//cac:RegistrationAddress//cbc:ID')[0];
-            $igv                       =    (string)$xml->xpath('//cac:TaxTotal//cac:TaxSubtotal//cbc:TaxAmount')[0];
-            $valor_venta               =    (string)$xml->xpath('//cac:TaxTotal//cac:TaxSubtotal//cbc:TaxableAmount')[0];
-            $total                     =    (string)$xml->xpath('//cac:LegalMonetaryTotal//cbc:PayableAmount')[0];
-            $descripcion               =    (string)$xml->xpath('//cac:InvoiceLine//cac:Item//cbc:Description')[0];
+            try {
+                $ruc_proveedor             =    (string)$xml->xpath('//cac:AccountingSupplierParty//cac:Party//cac:PartyIdentification//cbc:ID')[0];
+            } catch (\Throwable $th) {
+                $ruc_proveedor             =    (string)$xml->xpath('//cac:AccountingSupplierParty//cbc:CustomerAssignedAccountID')[0];
+            }
+                                            
+            $razon_social_proveedor        =    (string)$xml->xpath('//cac:AccountingSupplierParty//cac:Party//cac:PartyLegalEntity//cbc:RegistrationName')[0];
 
-            $array_ids         =  $xml->xpath('//cbc:ID');
+            try {
+                $ubigeo                    =    (string)$xml->xpath('//cac:AccountingCustomerParty//cac:Party//cac:PartyLegalEntity//cac:RegistrationAddress//cbc:ID')[0];
+            } catch (\Throwable $th) {
+                $ubigeo                    =    "";
+            }
+            
+            $igv                           =    $xml->xpath('//cac:TaxTotal//cac:TaxSubtotal//cbc:TaxAmount')[0];
+
+            $total                         =    $xml->xpath('//cac:LegalMonetaryTotal//cbc:PayableAmount')[0];
+
+            try {
+                $valor_venta               =    $xml->xpath('//cac:TaxTotal//cac:TaxSubtotal//cbc:TaxableAmount')[0];
+            } catch (\Throwable $th) {
+                $valor_venta               =   $total - $igv;
+            }
+
+            $descripcion                   =    (string)$xml->xpath('//cac:InvoiceLine//cac:Item//cbc:Description')[0];
+
+            $array_ids                     =  $xml->xpath('//cbc:ID');
+            
             foreach ($array_ids as $key => $value) {
                 if (strpos((string)$value, "-", 1) > 0 && strpos((string)$value, "F") == 0 && strpos((string)$value, "B") == 0) {
                     $pos = strpos((string)$value, "-", 1);
@@ -138,8 +168,107 @@ class FacturaController extends Controller
         return $db;
     }
 
-    public function Exportar() {
+    public function Exportar(Request $request) {
+
+        $xml = Uso::firstWhere('id','=',$request->uso_id);
         
+        $correo = $request->correo;
+        $asunto = $request->asunto;
+        
+        $user = Auth::user();
+        $date = Carbon::now()->format('d-m-Y');
+        
+        $numeracion = $request->codigo;
+
+        $data = DB::table('facturas')->where('uso_id','=',$xml->id)->get();
+
+        $template_path = public_path('/assets/files/xmltemplate.xlsx');
+        $spreadsheet = IOFactory::load($template_path);
+
+        $i = 2;
+
+        foreach ($data as $reg) {
+            
+                $cellA = 'A'.$i;
+                $cellB = 'B'.$i;
+                $cellC = 'C'.$i;
+                $cellD = 'D'.$i;
+                $cellE = 'E'.$i;
+                $cellF = 'G'.$i;
+                $cellG = 'G'.$i;
+                $cellH = 'H'.$i;
+                $cellI = 'I'.$i;
+                $cellJ = 'J'.$i;
+                $cellK = 'K'.$i;
+                $cellL = 'L'.$i;
+                
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellA, $reg->codigo_doc);
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellB, $reg->serie);
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellC, $reg->numero);
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellD, $reg->ruc_proveedor);
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellE, $reg->razon_social_proveedor);
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellF, $reg->ruc_cliente);
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellG, $reg->razon_social_cliente);
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellH, $reg->ubigeo);
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellI, $reg->descripcion);
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellJ, $reg->igv);
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellK, $reg->valor_venta);
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellL, $reg->total);
+            $i++;
+        }
+        
+        if($request->mail)
+        {
+            //header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+            //header('Content-Disposition: attachment;filename="REPORTE.xlsx"');
+            //header('Cache-Control: max-age=0');
+            // If you're serving to IE 9, then the following may be needed
+            //header('Cache-Control: max-age=1');
+            $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
+            ob_start();
+            $writer->save('php://output');
+            $content = ob_get_contents();
+            ob_end_clean();
+            $filename = 'report';
+            $exe = '.xlsx';
+            $unique_name = $filename.time().$exe;
+            $ruta = Storage::put('public/Xml/'.$user->name.'/'.$unique_name,$content);
+
+            $ruta = public_path('Storage/Xml/'.$user->name.'/');
+            
+            $ruta = $ruta.$unique_name;
+
+            $archivo = new Archivo();
+            $archivo->user_id = $user->id;
+            $archivo->uso_id = $xml->id;
+            $archivo->ruta = $ruta;
+            $archivo->save();
+            $id_archivo = $archivo->id;
+
+            $info = array(
+                'nombre' => $user->name,
+                'telefono' => $user->telefono,
+                'correo' => $user->mail,
+                'fecha' => $date,
+                'ruta' => $ruta
+            );
+
+            Mail::send('modules.caja.mail',$info,function($message){
+                $message->from('201602035x@gmail.com','Contadorapp');
+                $message->to('jorge.hospinal@yahoo.com')->subject(request()->input('asunto'));
+                $message->to(request()->input('correo'))->subject(request()->input('asunto'));
+            });
+
+        } else {
+            header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+            header('Content-Disposition: attachment;filename="REPORTE.xlsx"');
+            header('Cache-Control: max-age=0');
+            // If you're serving to IE 9, then the following may be needed
+            header('Cache-Control: max-age=1');
+            $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
+            
+            $writer->save('php://output');
+        }
     }
 
     /**

@@ -39,6 +39,13 @@ Route::match(['get', 'post'], '/Admin/Sistemacontable', 'AdminController@sistema
 
 Auth::routes();
 
+Route::match(['get', 'post'],'/Validador',
+['uses' => 'ValidacionController@Index']
+);
+Route::match(['get', 'post'],'/Validador/Importar',
+['uses' => 'ValidacionController@Importar']
+);
+
 Route::match(['get', 'post'],'/Xml',
 ['uses' => 'FacturaController@Index']
 );
@@ -401,11 +408,18 @@ Route::get('/Muestreo/Ventas', function () {
 Route::match(['get', 'post'], '/ImportarExcelCompra', 'MayorcompraController@importar');
 Route::match(['get', 'post'], '/ExportarExcelCompra', 'MayorcompraController@exportar');
 Route::match(['get', 'post'], '/FiltrarExcelCompra', 'MayorcompraController@filtrar');
-Route::match(['get', 'post'], '/ImportExcelVentas', 'MayorventaController@import');
-Route::match(['get', 'post'], '/ImportExcelGasto', 'MayorgastoController@import');
-Route::match(['get', 'post'], '/ImportExcelActivo', 'ActivofijoController@import');
-Auth::routes();
 
+Route::match(['get', 'post'], '/ImportarExcelVentas', 'MayorventaController@importar');
+Route::match(['get', 'post'], '/ExportarExcelVentas', 'MayorventaController@exportar');
+Route::match(['get', 'post'], '/FiltrarExcelVentas', 'MayorventaController@filtrar');
+
+Route::match(['get', 'post'], '/ImportarExcelGastos', 'MayorventaController@importar');
+Route::match(['get', 'post'], '/ExportarExcelGastos', 'MayorventaController@exportar');
+Route::match(['get', 'post'], '/FiltrarExcelGastos', 'MayorventaController@filtrar');
+
+Route::match(['get', 'post'], '/ImportExcelActivo', 'ActivofijoController@import');
+
+Auth::routes();
 
 Route::get('/Caja/Parametros', function () { return view('modules.caja.parametros'); })->name('View.Parametros');
 
@@ -480,7 +494,6 @@ Route::get('/Balance', function () {
     
 
 return view('modules.balance.balance');
-
 })->name('View.Balance');
 
 Route::match(['get', 'post'], '/Balance/Importar', 'BalanceController@importar');
@@ -499,7 +512,7 @@ Route::get('/Centrocosto', function () {
 Route::get('/Activos/Tipouso', function () { 
     
     $tipo = new Tipouso([
-        'descripcion' => 'Activos'
+        'descripcion' => 'Validacion'
     ]);
     $tipo->save();
 

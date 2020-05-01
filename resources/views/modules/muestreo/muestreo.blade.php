@@ -1,8 +1,8 @@
 <div class="pt-3 col-xl-10 col-md-10 col-sm-10 col-xs-11 mx-auto">
   <nav>
     <div class="nav nav-tabs" id="nav-tab" role="tablist">
-      <a class="nav-item nav-link" id="nav-compras-tab" data-toggle="tab" role="tab" aria-controls="nav-compras" aria-selected="true">COMPRAS</a>
-      <a class="nav-item nav-link" id="nav-ventas-tab" data-toggle="tab" role="tab" aria-controls="nav-ventas" aria-selected="false">VENTAS</a>
+      <a class="nav-item nav-link" id="nav-compras-tab" data-toggle="tab" role="tab" aria-controls="nav-compras" aria-selected="true">R. COMPRAS</a>
+      <a class="nav-item nav-link" id="nav-ventas-tab" data-toggle="tab" role="tab" aria-controls="nav-ventas" aria-selected="false">R. VENTAS</a>
       <a class="nav-item nav-link" id="nav-gastos-tab" data-toggle="tab" role="tab" aria-controls="nav-gastos" aria-selected="false">GASTOS</a>
     </div>
   </nav>
