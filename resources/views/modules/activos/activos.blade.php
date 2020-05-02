@@ -7,6 +7,7 @@
     <div class="jumbotron col-12 text-left py-3">
         <h5>1. Importar archivo</h5>
         <form id="formcargaactivos" enctype="multipart/form-data">
+            <input type="hidden" name="iduso" value="{{$uso->id}}">
             <div class="col-12 d-flex px-0">
                 <div class="col-xl-6 col-md-7 col-sm-8 col-xs-10 pl-0">
                     <div class="form-group">
