@@ -4,14 +4,20 @@ namespace App\Imports;
 
 use App\Mayorgasto;
 use Maatwebsite\Excel\Concerns\ToModel;
+use Maatwebsite\Excel\Concerns\WithStartRow;
 
-class MayorgastosImport implements ToModel
+class MayorgastosImport implements ToModel, WithStartRow
 {
     /**
     * @param array $row
     *
     * @return \Illuminate\Database\Eloquent\Model|null
     */
+    public function startRow(): int
+    {
+        return 2;
+    }
+
     public function model(array $row)
     {
         return new Mayorgasto([
@@ -26,19 +32,19 @@ class MayorgastosImport implements ToModel
             'Moneda'=> $row[8],
             'TipoDoc1'=> $row[9],
             'Numero'=> $row[10],
-            'TipoDoc2'=> $row[9],
-            'NumSerie'=> $row[11],
-            'NumComp'=> $row[12],
-            'FecEmision'=> $row[13],
-            'FecVenci'=> $row[14],
-            'FecOperacion'=> $row[15],
-            'Glosa1'=> $row[16],
-            'Glosa2'=> $row[17],
-            'Debe'=> $row[18],
-            'Haber'=> $row[19],
-            'RefenciaCompraVenta'=> $row[20],
-            'IndOP'=> $row[21],
-            'Diferenciar'=> $row[22], 
+            'TipoDoc2'=> $row[11],
+            'NumSerie'=> $row[12],
+            'NumComp'=> $row[13],
+            'FecEmision'=> $row[14],
+            'FecVenci'=> $row[15],
+            'FecOperacion'=> $row[16],
+            'Glosa1'=> $row[17],
+            'Glosa2'=> $row[18],
+            'Debe'=> $row[19],
+            'Haber'=> $row[20],
+            'RefenciaCompraVenta'=> $row[21],
+            'IndOP'=> $row[22],
+            'Diferenciar'=> $row[23]
         ]);
     }
 }

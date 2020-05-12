@@ -15,6 +15,7 @@ class Cajachica extends Model
     ,'documento'
     ,'fecha'
     ,'moneda'
+    ,'cambio'
     ,'concepto'
     ,'contabilidad'
     ,'centrocosto'

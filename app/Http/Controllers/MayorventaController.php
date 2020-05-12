@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Clases\Almacenamiento;
 use App\Clases\Modelosgenerales\Archivo;
+use App\Clases\Uso;
 use App\Formatos\Excelmuestreo;
 use App\Imports\MayorventasImport;
 use App\Mayorventa;
@@ -12,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class MayorventaController extends Controller
 {
@@ -20,9 +22,70 @@ class MayorventaController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function Index()
     {
-        //
+        if(Auth::check()){
+            $tipo = 9;
+            $tiposubuso = 11;
+            $uso_id = 0;
+            $idusuario = Auth::user()->id;
+            $contadorusomuestreo = DB::table('usos')->where('idusuario','=',$idusuario)->where('idtipo','=',$tipo)->count();
+            $contadorarchivos = DB::table('archivos')->where('user_id','=',$idusuario)->count();
+            $comprobantes = DB::table('comprobantes')->orderBy('codigo','asc')->get();
+            if($contadorusomuestreo > 0)
+            {
+                $uso = DB::table('usos')
+                ->where('idusuario','=',$idusuario)
+                ->where('idtipo','=',$tipo)
+                ->latest()
+                ->first();
+    
+                $uso_id = $uso->id;
+    
+                $contadorusoventas = DB::table('usos')->where('uso_id','=',$uso_id)->where('idusuario','=',$idusuario)->where('idtipo','=',$tiposubuso)->count();
+    
+                if($contadorusoventas>0)
+                {
+                    $usoventas = DB::table('usos')
+                    ->where('idusuario','=',$idusuario)
+                    ->where('uso_id','=',$uso_id)
+                    ->where('idtipo','=',$tiposubuso)
+                    ->latest()
+                    ->first();
+                    $archivos = DB::table('archivos')->where('uso_id','=',$usoventas->id)->get();
+                    return view('modules.muestreo.ventas',['archivos'=>$archivos,'uso' => $usoventas,'comprobantes' => $comprobantes]);
+                } else {
+    
+                    $usoventas = new Uso([
+                        'idusuario' => $idusuario,
+                        'uso_id' => $uso_id,
+                        'referencia' => 'Ejemplo de referencia ventas',
+                        'idtipo' => $tiposubuso,
+                    ]);
+                    $usoventas->save();
+                    $archivos = DB::table('archivos')->where('uso_id','=',$usoventas->id)->get();
+                    return view('modules.muestreo.ventas',['archivos'=>$archivos,'uso' => $usoventas,'comprobantes' => $comprobantes]);
+                }
+                
+            } else {
+                $uso = new Uso();
+                $uso->idusuario = $idusuario;
+                $uso->uso_id = 0;
+                $uso->referencia = 'Ejemplo de referencia';
+                $uso->idtipo = $tipo;
+                $uso->save();
+    
+                $usoventas = new Uso([
+                    'idusuario' => $idusuario,
+                    'uso_id' => $uso->id,
+                    'referencia' => 'Ejemplo de referencia ventas sin uso general',
+                    'idtipo' => $tiposubuso,
+                ]);
+                $usoventas->save();
+                $archivos = DB::table('archivos')->where('uso_id','=',$usoventas->id)->get();
+                return view('modules.muestreo.ventas',['archivos'=>$archivos,'uso' => $usoventas,'comprobantes' => $comprobantes]);
+            }
+        }
     }
 
     /**
@@ -86,9 +149,77 @@ class MayorventaController extends Controller
      * @param  \App\Mayorventa  $mayorventa
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Mayorventa $mayorventa)
+    public function Destroy(Request $request)
     {
-        //
+        $id = $request->id_archivo;
+        DB::table('mayorventas')->where('IdArchivo','=',$id)->delete();
+        DB::table('archivos')->where('id','=',$id)->delete();
+
+        $iduso = $request->iduso;
+        $archivos = DB::table('archivos')->where('id','=',$iduso)->get();
+        
+        return $archivos;
+    }
+
+    public function exportar(Request $request) 
+    {
+        $json_data = session('dataventas');
+
+        $cell_order_ventas = array("A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z","AA","AB","AC","AD","AE","AF","AG","AH");
+        $columnas = 
+		['Periodo','Correlativo','Ordenado',
+		'FecEmision','FecVenci','TipoComp','NumSerie','NumComp','NumTicket','TipoDoc',
+		'NroDoc','cliente','Export','BI','Desci','IGVIPMBI','IGVIPMDesc','ImporteExo',
+		'ImporteIna','ISC','BIIGVAP','IGVAP','Otros','Total','Moneda','TipoCam',
+		'FecOrigenMod','TipoCompMod','NumSerieMod','NumDocMod','Contrato','ErrorT1',
+		'MedioPago','Estado'];
+
+        $user_id = Auth::user()->id;
+        $username = Auth::user()->name;
+        
+        $ruta = public_path('/assets/files/templatemayorventa.xlsx');
+
+        //$array_data = json_decode($json_data, true);
+        $array_data = $json_data;
+        $spreadsheet = IOFactory::load($ruta);
+    
+        $cont_1 = 6;
+
+        $spreadsheet->setActiveSheetIndex(0)->setCellValue('B1', $request->empresa);
+        $spreadsheet->setActiveSheetIndex(0)->setCellValue('B2', $request->ruc);
+        $spreadsheet->setActiveSheetIndex(0)->setCellValue('B3', $request->periodo);
+    
+        for ($f = 0; $f < count($array_data); $f++) {
+            $cont_2 = 0;
+            $item = $array_data[$f];
+            $data = json_decode($item->data);
+            for ($i=0; $i < count($columnas); $i++) { 
+                $cell_id = $cell_order_ventas[$cont_2].$cont_1;
+                $cell_value = $data->{$columnas[$i]};
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cell_id, $cell_value);
+                $cont_2++;
+            }
+            //foreach ($item['data'] as $cell_value) {
+            //    $cell_id = $cell_order_compras[$cont_2].$cont_1;
+            //    $spreadsheet->setActiveSheetIndex(0)->setCellValue($cell_id, $cell_value);
+            //    $cont_2++;
+            //}
+            $cont_1++;
+        }
+
+        $spreadsheet->getActiveSheet()->setTitle('Hoja 1');
+    
+        $spreadsheet->setActiveSheetIndex(0);
+
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="reportecompras.xlsx"');
+        header('Cache-Control: max-age=0');
+        // If you're serving to IE 9, then the following may be needed
+        header('Cache-Control: max-age=1');
+        
+        $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
+        $writer->save('php://output');
+        exit;
     }
 
     public function importar(Request $request)
@@ -101,13 +232,15 @@ class MayorventaController extends Controller
         $username = Auth::user()->name;
         $useremail = Auth::user()->email;
         $uso_id = $request->input('iduso');
+
+        $nombre = $request->nombrearchivo;
         
         if($request->hasfile('myfile')){
-            $ruta = Almacenamiento::guardarmuestrascompras($username,$request->file('myfile'));
+            $ruta = Almacenamiento::guardartemporalmente($username,$request->file('myfile'));
             $archivo = new Archivo();
             $archivo->user_id = $user_id;
             $archivo->uso_id = $uso_id;
-            $archivo->ruta = $ruta;
+            $archivo->ruta = $nombre;
             $archivo->save();
             $id_archivo = $archivo->id;
             
@@ -133,7 +266,7 @@ class MayorventaController extends Controller
         $comparacion = $request->input('comparacion');
         $tipo = $request->input('tipocomprobante');
         $cantidad = $request->input('cantidad');
-        return [$impMin,$impMax,$cantidad,$comparacion,$tipo,$uso_id,$id_archivo];
+        
         $reporte = DB::select('call report_xl_ventas(?, ?, ?,?, ?, ?, ?)',[$impMin,$impMax,$cantidad,$comparacion,$tipo,$uso_id,$id_archivo]);
         
         session(['dataventas' => $reporte]);

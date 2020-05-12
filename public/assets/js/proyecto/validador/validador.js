@@ -69,3 +69,23 @@ function exportarmayorvalidador() {
 	});
 }
 
+function tablaarray(data) {
+	var table = document.createElement('table');
+	var thead = document.createElement('thead');
+	var tbody = document.createElement('tbody');
+	var tr = document.createElement('tr');
+	var td = document.createElement('td');
+	var th = document.createElement('th');
+	for (let index = 0; index < data.length; index++) {
+		const row = data[index];
+		tr = document.createElement('tr');
+		for (let index = 0; index < row.length; index++) {
+			const col = row[index];
+			td = document.createElement('td');
+			td.innerHTML = col;
+			tr.append(td);
+		}
+		tbody.append(tr);
+	}
+	table.append(tbody);
+}

@@ -15,7 +15,6 @@ class Txtexportaciones extends Model
         {
             while (($row = fgetcsv($handle, 1000, $delimiter)) !== FALSE)
             {
-                $row[15] = utf8_encode($row[15]);
                 array_push($data, $row);
             }
             fclose($handle);

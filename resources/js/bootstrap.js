@@ -8,8 +8,12 @@ window._ = require('lodash');
 
 try {
     window.$ = window.jQuery = require('jquery');
+    window.JSZip = require('jszip');
     require('bootstrap');
-    require('datatables.net-dt');
+    require('pdfmake');
+    require( 'datatables.net-dt' );
+    require( 'datatables.net-buttons-dt' );
+    require( 'datatables.net-buttons/js/buttons.html5.js' )($, jszip);
     require('jquery-confirm');
 } catch (e) {}
 

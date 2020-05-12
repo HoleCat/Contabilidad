@@ -71,7 +71,7 @@ class FacturaController extends Controller
 
     public function eliminar(Request $request) {
         DB::delete('delete from facturas where id = ?', [$request->id]);
-        return Factura::get();
+        return Factura::get()->where('uso_id','=',$request->uso_id);
     }
 
     public function GetData(Request $request) {
@@ -79,6 +79,7 @@ class FacturaController extends Controller
 
         $files = $request->file('myfile');
         $nro = count($files);
+        $unique_id = uniqid().time();
         for ($i=0; $i < $nro; $i++) { 
             $filenamewithext = $files[$i]->getClientOriginalName();
             $filename = pathinfo($filenamewithext, PATHINFO_FILENAME);
@@ -92,7 +93,6 @@ class FacturaController extends Controller
             $xml->registerXPathNamespace('cbc',$ns['cbc']);
             
             $ids = array();
-            
 
             $uso_id                    =    $request->uso_id;
             $usuario_id                =    Auth::user()->id;
@@ -148,6 +148,7 @@ class FacturaController extends Controller
             //initializar read xml
             $factura = new Factura();
             $factura->uso_id = $uso_id;
+            $factura->key = $unique_id;
             $factura->usuario_id = $usuario_id;
             $factura->codigo_doc = $codigo_doc;
             $factura->serie = $serie;
@@ -164,7 +165,7 @@ class FacturaController extends Controller
             $factura->save();
         }
 
-        $db = DB::table("facturas")->where('usuario_id','=',$usuario_id)->where('uso_id','=',$uso_id)->get();
+        $db = DB::table("facturas")->where('usuario_id','=',$usuario_id)->where('uso_id','=',$request->uso_id)->where('key','=',$unique_id)->get();
         return $db;
     }
 
@@ -194,26 +195,25 @@ class FacturaController extends Controller
                 $cellC = 'C'.$i;
                 $cellD = 'D'.$i;
                 $cellE = 'E'.$i;
-                $cellF = 'G'.$i;
+                $cellF = 'F'.$i;
                 $cellG = 'G'.$i;
                 $cellH = 'H'.$i;
                 $cellI = 'I'.$i;
                 $cellJ = 'J'.$i;
                 $cellK = 'K'.$i;
-                $cellL = 'L'.$i;
-                
-                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellA, $reg->codigo_doc);
-                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellB, $reg->serie);
-                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellC, $reg->numero);
-                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellD, $reg->ruc_proveedor);
-                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellE, $reg->razon_social_proveedor);
-                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellF, $reg->ruc_cliente);
-                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellG, $reg->razon_social_cliente);
-                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellH, $reg->ubigeo);
-                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellI, $reg->descripcion);
-                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellJ, $reg->igv);
-                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellK, $reg->valor_venta);
-                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellL, $reg->total);
+
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellA, $reg->ruc_cliente);
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellB, $reg->razon_social_cliente);
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellC, $reg->codigo_doc);
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellD, $reg->serie);
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellE, $reg->numero);
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellF, $reg->ruc_proveedor);
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellG, $reg->razon_social_proveedor);
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellH, $reg->descripcion);
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellI, $reg->igv);
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellJ, $reg->valor_venta);
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($cellK, $reg->total);
+
             $i++;
         }
         
@@ -298,8 +298,10 @@ class FacturaController extends Controller
      * @param  \App\Clases\Xml\Factura  $factura
      * @return \Illuminate\Http\Response
      */
-    public function show(Factura $factura)
+    public function show(Factura $factura, Request $request)
     {
+        $db = DB::table("facturas")->where('uso_id','=',$request->uso_id)->get();
+        return $db;
         //
     }
 

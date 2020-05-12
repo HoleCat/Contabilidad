@@ -7,7 +7,7 @@
         <div class="col-xl-12 col-md-12 col-sm-12 col-xs-12">
             <form id="formliquidacion">
                 <input type="hidden" name="iduso" value="{{ $uso->id }}">
-                <div class="col-12 d-flex flex-wrap px-0">
+                <div class="mx-auto col-xl-8 col-md-9 col-sm-10 col-xs-12 d-flex flex-wrap px-0">
                     <div class="col-xl-6 col-md-6 col-sm-6 col-xs-12 px-1">
                         <div class="form-group my-0">
                             <label>LIQUIDACIÓN</label>

@@ -2,6 +2,7 @@
 
 namespace App\Formatos;
 
+use App\Clases\Modelosgenerales\Comprobante;
 use Illuminate\Database\Eloquent\Model;
 
 class Validacion extends Model
@@ -91,5 +92,16 @@ class Validacion extends Model
         }
 
         return $data;
+    }
+
+    public static function Completarcomprobante($comprobante,$val){
+        if(strlen($comprobante)<$val)
+        {
+            $faltantes = $val - strlen($comprobante);
+            for ($i=0; $i < $faltantes; $i++) { 
+                $comprobante = '0'.$comprobante;
+            }
+        }
+        return $comprobante;
     }
 }

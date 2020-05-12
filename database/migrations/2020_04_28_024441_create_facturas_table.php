@@ -17,6 +17,7 @@ class CreateFacturasTable extends Migration
             $table->id();
             $table->integer("uso_id");
             $table->integer("usuario_id");
+            $table->string("key");
             $table->string("codigo_doc");
             $table->string("serie");
             $table->string("numero");

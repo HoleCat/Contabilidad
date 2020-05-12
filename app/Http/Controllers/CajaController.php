@@ -13,7 +13,7 @@ use App\Clases\Modelosgenerales\Comprobante;
 use App\clases\modelosgenerales\Dni;
 use App\Clases\Modelosgenerales\Moneda;
 use App\Clases\Uso;
-use App\Rendirpago;
+use App\Clases\Caja\Rendirpago;
 use Barryvdh\DomPDF\Facade as PDF;
 use Carbon\Carbon;
 use DateTime;

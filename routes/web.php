@@ -8,6 +8,7 @@ use App\Clases\Modelosgenerales\Empresa;
 use App\Clases\Modelosgenerales\Moneda;
 use App\clases\modelosgenerales\Pais;
 use App\Clases\Modelosgenerales\Tipouso;
+use App\Clases\Reporte\DTR;
 use App\Clases\Uso;
 use App\Userdata;
 use Illuminate\Support\Facades\Route;
@@ -39,6 +40,31 @@ Route::match(['get', 'post'], '/Admin/Sistemacontable', 'AdminController@sistema
 
 Auth::routes();
 
+Route::match(['get', 'post'],'/Reporte',
+['uses' => 'ReporteComprasController@Index']
+);
+Route::match(['get', 'post'],'/Reporte/Compras/Importar',
+['uses' => 'ReporteComprasController@Importar']
+);
+Route::match(['get', 'post'],'/Reporte/Compras/Liberar',
+['uses' => 'ReporteComprasController@Liberar']
+);
+Route::match(['get', 'post'],'/Reporte/Compras/Status',
+['uses' => 'ReporteComprasController@Status']
+);
+Route::match(['get', 'post'],'/Reporte/Compras/Data',
+['uses' => 'ReporteComprasController@Data']
+);
+Route::match(['get', 'post'],'/Reporte/Compras/Txtconsultaruc',
+['uses' => 'ReporteComprasController@Txtconsultaruc']
+);
+Route::match(['get', 'post'],'/Reporte/Compras/Txtcomprobantes',
+['uses' => 'ReporteComprasController@Txtcomprobantes']
+);
+Route::match(['get', 'post'],'/Reporte/Compras/Detraccion',
+['uses' => 'ReporteComprasController@ImportarDetraccion']
+);
+
 Route::match(['get', 'post'],'/Validador',
 ['uses' => 'ValidacionController@Index']
 );
@@ -54,6 +80,9 @@ Route::match(['get', 'post'],'/Xml/Nuevo',
 );
 Route::match(['get', 'post'],'/Xml/Exportar',
 ['uses' => 'FacturaController@Exportar']
+);
+Route::match(['get', 'post'],'/Xml/Show',
+['uses' => 'FacturaController@show']
 );
 Route::match(['get', 'post'],'/upload',[
     'uses' => 'FacturaController@GetData'
@@ -208,202 +237,14 @@ Route::match(['get', 'post'], '/Caja/Rendirpago/Exportar', 'CajaController@cajac
 Route::get('/Caja/Parametros', function () { return view('modules.caja.parametros'); })->name('View.Parametros');
 
 Route::get('/Muestreo', function () { return view('modules.muestreo.muestreo'); })->name('View.Muestreo');
-Route::get('/Muestreo/Compras', function () {
-    if(Auth::check()){
-        $tipo = 9;
-        $tiposubuso = 10;
-        $uso_id = 0;
-        $idusuario = Auth::user()->id;
-        $contadorusomuestreo = DB::table('usos')->where('idusuario','=',$idusuario)->where('idtipo','=',$tipo)->count();
-        $contadorarchivos = DB::table('archivos')->where('user_id','=',$idusuario)->count();
-        $comprobantes = DB::table('comprobantes')->orderBy('codigo','asc')->get();
-        if($contadorusomuestreo > 0)
-        {
-            $uso = DB::table('usos')
-            ->where('idusuario','=',$idusuario)
-            ->where('idtipo','=',$tipo)
-            ->latest()
-            ->first();
 
-            $uso_id = $uso->id;
+Route::get('/Muestreo/Compras', 'MayorcompraController@Index');
+Route::get('/Muestreo/Gastos', 'MayorgastoController@Index');
+Route::get('/Muestreo/Ventas', 'MayorventaController@Index');
 
-            $contadorusocompras = DB::table('usos')->where('uso_id','=',$uso_id)->where('idusuario','=',$idusuario)->where('idtipo','=',$tiposubuso)->count();
-
-            if($contadorusocompras>0)
-            {
-                $usocompras = DB::table('usos')
-                ->where('idusuario','=',$idusuario)
-                ->where('uso_id','=',$uso_id)
-                ->where('idtipo','=',$tiposubuso)
-                ->latest()
-                ->first();
-
-                return view('modules.muestreo.compras',['uso' => $usocompras,'comprobantes' => $comprobantes]);
-            } else {
-
-                $usocompras = new Uso([
-                    'idusuario' => $idusuario,
-                    'uso_id' => $uso_id,
-                    'referencia' => 'Ejemplo de referencia compras',
-                    'idtipo' => $tiposubuso,
-                ]);
-                $usocompras->save();
-
-                return view('modules.muestreo.compras',['uso' => $usocompras,'comprobantes' => $comprobantes]);
-            }
-            
-        } else {
-            $uso = new Uso();
-            $uso->idusuario = $idusuario;
-            $uso->uso_id = 0;
-            $uso->referencia = 'Ejemplo de referencia';
-            $uso->idtipo = $tipo;
-            $uso->save();
-
-            $usocompras = new Uso([
-                'idusuario' => $idusuario,
-                'uso_id' => $uso->id,
-                'referencia' => 'Ejemplo de referencia compras sin uso general',
-                'idtipo' => $tiposubuso,
-            ]);
-            $usocompras->save();
-
-            return view('modules.muestreo.compras',['uso' => $usocompras,'comprobantes' => $comprobantes]);
-        }
-    }
-})->name('View.Compras');
-Route::get('/Muestreo/Gastos', function () {
-
-    if(Auth::check()){
-        $tipo = 9;
-        $tiposubuso = 11;
-        $uso_id = 0;
-        $idusuario = Auth::user()->id;
-        $contadorusomuestreo = DB::table('usos')->where('idusuario','=',$idusuario)->where('idtipo','=',$tipo)->count();
-        $contadorarchivos = DB::table('archivos')->where('user_id','=',$idusuario)->count();
-        $comprobantes = DB::table('comprobantes')->orderBy('codigo','asc')->get();
-        if($contadorusomuestreo > 0)
-        {
-            $uso = DB::table('usos')
-            ->where('idusuario','=',$idusuario)
-            ->where('idtipo','=',$tipo)
-            ->latest()
-            ->first();
-
-            $uso_id = $uso->id;
-
-            $contadorusocompras = DB::table('usos')->where('uso_id','=',$uso_id)->where('idusuario','=',$idusuario)->where('idtipo','=',$tiposubuso)->count();
-
-            if($contadorusocompras>0)
-            {
-                $usocompras = DB::table('usos')
-                ->where('idusuario','=',$idusuario)
-                ->where('uso_id','=',$uso_id)
-                ->where('idtipo','=',$tiposubuso)
-                ->latest()
-                ->first();
-
-                return view('modules.muestreo.gastos',['uso' => $usocompras,'comprobantes' => $comprobantes]);
-            } else {
-
-                $usocompras = new Uso([
-                    'idusuario' => $idusuario,
-                    'uso_id' => $uso_id,
-                    'referencia' => 'Ejemplo de referencia compras',
-                    'idtipo' => $tiposubuso,
-                ]);
-                $usocompras->save();
-
-                return view('modules.muestreo.gastos',['uso' => $usocompras,'comprobantes' => $comprobantes]);
-            }
-            
-        } else {
-            $uso = new Uso();
-            $uso->idusuario = $idusuario;
-            $uso->uso_id = 0;
-            $uso->referencia = 'Ejemplo de referencia';
-            $uso->idtipo = $tipo;
-            $uso->save();
-
-            $usocompras = new Uso([
-                'idusuario' => $idusuario,
-                'uso_id' => $uso->id,
-                'referencia' => 'Ejemplo de referencia compras sin uso general',
-                'idtipo' => $tiposubuso,
-            ]);
-            $usocompras->save();
-
-            return view('modules.muestreo.gastos',['uso' => $usocompras,'comprobantes' => $comprobantes]);
-        }
-    }
-
-})->name('View.Gastos');
-Route::get('/Muestreo/Ventas', function () {
-
-    if(Auth::check()){
-        $tipo = 9;
-        $tiposubuso = 12;
-        $uso_id = 0;
-        $idusuario = Auth::user()->id;
-        $contadorusomuestreo = DB::table('usos')->where('idusuario','=',$idusuario)->where('idtipo','=',$tipo)->count();
-        $contadorarchivos = DB::table('archivos')->where('user_id','=',$idusuario)->count();
-        $comprobantes = DB::table('comprobantes')->orderBy('codigo','asc')->get();
-        if($contadorusomuestreo > 0)
-        {
-            $uso = DB::table('usos')
-            ->where('idusuario','=',$idusuario)
-            ->where('idtipo','=',$tipo)
-            ->latest()
-            ->first();
-
-            $uso_id = $uso->id;
-
-            $contadorusocompras = DB::table('usos')->where('uso_id','=',$uso_id)->where('idusuario','=',$idusuario)->where('idtipo','=',$tiposubuso)->count();
-
-            if($contadorusocompras>0)
-            {
-                $usocompras = DB::table('usos')
-                ->where('idusuario','=',$idusuario)
-                ->where('uso_id','=',$uso_id)
-                ->where('idtipo','=',$tiposubuso)
-                ->latest()
-                ->first();
-
-                return view('modules.muestreo.ventas',['uso' => $usocompras,'comprobantes' => $comprobantes]);
-            } else {
-
-                $usocompras = new Uso([
-                    'idusuario' => $idusuario,
-                    'uso_id' => $uso_id,
-                    'referencia' => 'Ejemplo de referencia compras',
-                    'idtipo' => $tiposubuso,
-                ]);
-                $usocompras->save();
-
-                return view('modules.muestreo.ventas',['uso' => $usocompras,'comprobantes' => $comprobantes]);
-            }
-            
-        } else {
-            $uso = new Uso();
-            $uso->idusuario = $idusuario;
-            $uso->uso_id = 0;
-            $uso->referencia = 'Ejemplo de referencia';
-            $uso->idtipo = $tipo;
-            $uso->save();
-
-            $usocompras = new Uso([
-                'idusuario' => $idusuario,
-                'uso_id' => $uso->id,
-                'referencia' => 'Ejemplo de referencia compras sin uso general',
-                'idtipo' => $tiposubuso,
-            ]);
-            $usocompras->save();
-
-            return view('modules.muestreo.ventas',['uso' => $usocompras,'comprobantes' => $comprobantes]);
-        }
-    }
-
-})->name('View.Ventas');
+Route::match(['get', 'post'],'/Muestreo/Compras/Destroy', 'MayorcompraController@Destroy');
+Route::match(['get', 'post'],'/Muestreo/Gastos/Destroy', 'MayorgastoController@Destroy');
+Route::match(['get', 'post'],'/Muestreo/Ventas/Destroy', 'MayorventaController@Destroy');
 
 Route::match(['get', 'post'], '/ImportarExcelCompra', 'MayorcompraController@importar');
 Route::match(['get', 'post'], '/ExportarExcelCompra', 'MayorcompraController@exportar');
@@ -413,9 +254,9 @@ Route::match(['get', 'post'], '/ImportarExcelVentas', 'MayorventaController@impo
 Route::match(['get', 'post'], '/ExportarExcelVentas', 'MayorventaController@exportar');
 Route::match(['get', 'post'], '/FiltrarExcelVentas', 'MayorventaController@filtrar');
 
-Route::match(['get', 'post'], '/ImportarExcelGastos', 'MayorventaController@importar');
-Route::match(['get', 'post'], '/ExportarExcelGastos', 'MayorventaController@exportar');
-Route::match(['get', 'post'], '/FiltrarExcelGastos', 'MayorventaController@filtrar');
+Route::match(['get', 'post'], '/ImportarExcelGastos', 'MayorgastoController@importar');
+Route::match(['get', 'post'], '/ExportarExcelGastos', 'MayorgastoController@exportar');
+Route::match(['get', 'post'], '/FiltrarExcelGastos', 'MayorgastoController@filtrar');
 
 Route::match(['get', 'post'], '/ImportExcelActivo', 'ActivofijoController@import');
 
@@ -423,42 +264,11 @@ Auth::routes();
 
 Route::get('/Caja/Parametros', function () { return view('modules.caja.parametros'); })->name('View.Parametros');
 
-Route::get('/Activos', function () {
-
-    if(Auth::check()){
-        $tipo = 17;
-        $uso_id = 0;
-        $idusuario = Auth::user()->id;
-        $contadorusoactivos = DB::table('usos')->where('idusuario','=',$idusuario)->where('idtipo','=',$tipo)->count();
-        
-        $aprobadores = DB::table('aprobadors')->where('user_id','=',Auth::user()->id)->get();
-        
-        if($contadorusoactivos > 0)
-        {
-            $uso = DB::table('usos')
-            ->where('idusuario','=',$idusuario)
-            ->where('idtipo','=',$tipo)
-            ->latest()
-            ->first();
-
-            return view('modules.activos.activos',['uso' => $uso,'aprobadores' => $aprobadores]);
-            
-        } else {
-            $uso = new Uso();
-            $uso->idusuario = $idusuario;
-            $uso->uso_id = 0;
-            $uso->referencia = 'Ejemplo de referencia activos';
-            $uso->idtipo = $tipo;
-            $uso->save();
-
-            return view('modules.activos.activos',['uso' => $uso,'aprobadores' => $aprobadores]);
-        }
-    }
-    
-return view('modules.activos.activos');
-})->name('View.Activos');
+Route::get('/Activos', 'ActivofijoController@Index');
 Route::match(['get', 'post'], '/Activos/Importar', 'ActivofijoController@importar');
 Route::match(['get', 'post'], '/Activos/Filtrar', 'ActivofijoController@filtrar');
+Route::match(['get', 'post'], '/Activos/Exportar', 'ActivofijoController@exportar');
+Route::match(['get', 'post'], '/Activos/Destroy', 'ActivofijoController@Destroy');
 
 Route::get('/Balance', function () {
 
@@ -491,7 +301,6 @@ Route::get('/Balance', function () {
             return view('modules.balance.balance',['uso' => $uso,'aprobadores' => $aprobadores]);
         }
     }
-    
 
 return view('modules.balance.balance');
 })->name('View.Balance');
@@ -500,7 +309,6 @@ Route::match(['get', 'post'], '/Balance/Importar', 'BalanceController@importar')
 Route::match(['get', 'post'], '/Balance/Exportar', 'BalanceController@exportar');
 
 Route::get('/Centrocosto', function () { 
-    
     $Centrocosto = new Centrocosto([
         'codigo' => '49448',
         'descripcion' => 'Centro costo 1'
@@ -508,7 +316,8 @@ Route::get('/Centrocosto', function () {
     $Centrocosto->save();
 
     $Centrocostos = DB::table('Centrocostos')->get();
-    return $Centrocostos; });
+    return $Centrocostos;
+});
 Route::get('/Activos/Tipouso', function () { 
     
     $tipo = new Tipouso([
@@ -592,10 +401,51 @@ Route::get('/Dni', function () {
     $dnis = DB::table('dnis')->get();
     return $dnis; });
 
-Route::get('/Muestreo/TipoUso', function () { 
+Route::get('/DTR', function () { 
+
+    $dtr1 = new DTR(['COD' => '008','MCOD'=>'8','Porcentaje'=>0.04,'Denominacion'=>'Madera']);
+    $dtr1->save();
+    $dtr1 = new DTR(['COD'=>'010','MCOD'=>'10','Porcentaje'=>0.15,'Denominacion'=>'Residuos, subproductos, desechos.']);
+    $dtr1->save();
+    $dtr1 = new DTR(['COD'=>'012','MCOD'=>'12','Porcentaje'=>0.12,'Denominacion'=>'Intermed. Laboral y Tercerización']);
+    $dtr1->save();
+    $dtr1 = new DTR(['COD'=>'019','MCOD'=>'19','Porcentaje'=>0.10,'Denominacion'=>'Arrendamiento de muebles']);
+    $dtr1->save();
+    $dtr1 = new DTR(['COD'=>'020','MCOD'=>'20','Porcentaje'=>0.12,'Denominacion'=>'Manten. / Reparación bienes muebles']);
+    $dtr1->save();
+    $dtr1 = new DTR(['COD'=>'021','MCOD'=>'21','Porcentaje'=>0.10,'Denominacion'=>'Movimiento de carga']);
+    $dtr1->save();
+    $dtr1 = new DTR(['COD'=>'022','MCOD'=>'22','Porcentaje'=>0.12,'Denominacion'=>'Otros servicios empresariales']);
+    $dtr1->save();
+    $dtr1 = new DTR(['COD'=>'024','MCOD'=>'24','Porcentaje'=>0.10,'Denominacion'=>'Comisión Mercantil']);
+    $dtr1->save();
+    $dtr1 = new DTR(['COD'=>'025','MCOD'=>'25','Porcentaje'=>0.10,'Denominacion'=>'Fabricación de bienes por encargo']);
+    $dtr1->save();
+    $dtr1 = new DTR(['COD'=>'026','MCOD'=>'26','Porcentaje'=>0.10,'Denominacion'=>'Transporte de personas']);
+    $dtr1->save();
+    $dtr1 = new DTR(['COD'=>'027','MCOD'=>'27','Porcentaje'=>0.04,'Denominacion'=>'ransporte de bienes']);
+    $dtr1->save();
+    $dtr1 = new DTR(['COD'=>'030','MCOD'=>'30','Porcentaje'=>0.04,'Denominacion'=>'ontrato de construcción']);
+    $dtr1->save();
+    $dtr1 = new DTR(['COD'=>'037','MCOD'=>'37','Porcentaje'=>0.12,'Denominacion'=>'Demás servicios gravados con el IGV']);
+    $dtr1->save();
+    $dtr1 = new DTR(['COD'=>'039','MCOD'=>'39','Porcentaje'=>0.10,'Denominacion'=>'Minerales no metálicos']);
+    $dtr1->save();
+    $dtr1 = new DTR(['COD'=>'099','MCOD'=>'99','Porcentaje'=>0.08,'Denominacion'=>'ey N° 30737']);
+    $dtr1->save();
+
+    $data = DB::table('d_t_r_s')->get();
+    return $data;
+});
+
+Route::get('/TipoUso', function () { 
     
     $tipo = new Tipouso([
-        'descripcion' => 'Xml'
+        'descripcion' => 'Reporte'
+    ]);
+    
+    $tipo = new Tipouso([
+        'descripcion' => 'Reporte de Compras'
     ]);
     $tipo->save();
 
@@ -628,3 +478,5 @@ Route::get('/Muestreo/TipoUso', function () {
     
         $aprobadores = DB::table('aprobadors')->get();
         return $aprobadores; });
+
+    

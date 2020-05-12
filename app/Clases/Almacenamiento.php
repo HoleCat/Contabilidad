@@ -7,22 +7,13 @@ use Illuminate\Support\Facades\Auth;
 
 class Almacenamiento extends Model
 {
-    static function guardarmuestrascompras($username,$file) {
+    static function guardartemporalmente($username,$file) {
         $useremail = Auth::user()->email;
         $filenamewithext = $file->getClientOriginalName();
         $filename = pathinfo($filenamewithext, PATHINFO_FILENAME);
         $ext = $file->getClientOriginalExtension();
         $filenametostore = $filename.'_'.time().'.'.$ext;
         $ruta = $file->move('storage/'.$useremail.'/'.'temporal/', $filenametostore);
-        return $ruta;
-    }
-
-    static function guardarmuestrasventas($username,$file) {
-        $filenamewithext = $file->getClientOriginalName();
-        $filename = pathinfo($filenamewithext, PATHINFO_FILENAME);
-        $ext = $file->getClientOriginalExtension();
-        $filenametostore = $filename.'_'.time().'.'.$ext;
-        $ruta = $file->move('storage/muestreo/ventas/'.$username.'/'.time().'_'.$filenametostore.'/archivo/', $filenametostore);
         return $ruta;
     }
 

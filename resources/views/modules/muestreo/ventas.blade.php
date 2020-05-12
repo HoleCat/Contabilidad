@@ -32,6 +32,7 @@
     <div class="jumbotron col-12 text-left py-3">
         <h5>2. Filtra la data</h5>
         <div class="row">
+            @include('herramientas.mantenedores.archivos')
             <div class="col-xl-3 col-md-4 col-sm-12 col-xs-12">
                 <form id="formfiltroventas" class="text-center">
                     <input type="hidden" name="iduso" value="{{$uso->id}}">
@@ -87,6 +88,17 @@
     <div class="jumbotron col-12 text-left py-3">
         <h5>3. Exportar resultado</h5>
         <form action="/ExportarExcelVentas" method="GET">
+            <div class="col-xl-6 col-md-6 col-sm-8 col-xs-12">
+                <div class="form-group">
+                    <input class="form-control" type="text" name="empresa" placeholder="EMPRESA">
+                </div>
+                <div class="form-group">
+                    <input class="form-control" type="text" name="ruc" placeholder="RUC">
+                </div>
+                <div class="form-group">
+                    <input class="form-control" type="text" name="periodo" placeholder="PERIODO">
+                </div>
+            </div>
             <button type="submit" id="btn-exportar-mayorventas" class="btn btn-warning">Exportar en excel</button>
         </form>
     </div>

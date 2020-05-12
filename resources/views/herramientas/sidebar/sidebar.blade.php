@@ -7,6 +7,20 @@
 </ul>
 
 <button onclick="sidebar('#side-bar')" class="btn position-fixed btn-tools"><i class="fas fa-bars"></i></button>-->
+<button data-toggle="modal" data-target="#modaltv" class="btn btn-info position-fixed btn-tv"><i class="fas fa-tv"></i></button>
+<div class="modal fade" id="modaltv" tabindex="-1" role="dialog" aria-labelledby="modaltvtitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xxl" role="document">
+      <div class="modal-content">
+        <div class="modal-body">
+            <iframe class="w-100 h-100" src="http://e-consultaruc.sunat.gob.pe/cl-ti-itmrconsmulruc/jrmS00Alias"></iframe>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">CERRAR</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 
 <div class="nav flex-column nav-pills options-bar-show position-fixed" id="options-bar" role="tablist" aria-orientation="vertical">
     <a id="opcion-muestras" class="mb-1 nav-link bg-primary" data-toggle="pill" role="tab" aria-controls="v-pills-home" aria-selected="false"><i class="fas fa-flask"></i></a>

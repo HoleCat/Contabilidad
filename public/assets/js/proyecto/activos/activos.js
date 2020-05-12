@@ -3,6 +3,19 @@ eventosactivos();
 var dataactivos = '';
 
 function eventosactivos(){
+	$('#formeliminardata').submit(function(e){
+		e.preventDefault();
+		function confirmar(data) {
+			crearselect('#usoarchivoselect',data)
+		}
+		let formdata = new FormData(e.target);
+		ejecutarruta(formdata,'/Activos/Destroy',confirmar);
+	});
+	$('#usoarchivoselect').change(function(e){
+		let idarchivo = e.target.value;
+		asignarvalor('#idarchivoactivos',idarchivo);
+		console.log(idarchivo);
+	});
 	$('#activosfile').change(function(e){
 		let filename = this.files[0].name;
 		let filelabel = document.querySelector('#activoslabel');
@@ -29,16 +42,16 @@ function eventosactivos(){
 		]
 		let form = document.querySelector('#formfiltroactivos');
 		let formdata = new FormData(form);
-        let columnas = ['id','IdUso','IdArchivo','Codigo','CuentaContable','Descipcion','Marca','Modelo','NumeroSeriePlaca','CostoFin','Adquisicion','Mejoras'
+        let columnas = ['Codigo','CuentaContable','Descipcion','Marca','Modelo','NumeroSeriePlaca','CostoFin','Adquisicion','Mejoras'
         ,'RetirosBajas','Otros','ValorHistorico','AjusteInflacion','ValorAjustado'
         ,'CostoNetoIni','FecAdquisicion','FecInicio','Metodo','NroDoc','PorcDepreciacion','DepreAcumulada','DepreEjercicio','DepreRelacionada','DepreOtros'
         ,'DepreHistorico','DepreAjusInflacion','DepreAcuInflacion','CostoHistorico','DepreAcuTributaria','CostoNetoIniTributaria','DepreEjercicioTributaria'
-        ,'FecBaja','created_at','updated_at','RATIO','DEPRESIACION','DEPRESIACION_VALIDADA','ANALISISn1','ANALISISn2',];
-        let cabecera = ['id','IdUso','IdArchivo','Codigo','CuentaContable','Descipcion','Marca','Modelo','NumeroSeriePlaca','CostoFin','Adquisicion','Mejoras',
+        ,'FecBaja','RATIO','DEPRESIACION','DEPRESIACION_VALIDADA','ANALISISn1','ANALISISn2',];
+        let cabecera = ['Codigo','CuentaContable','Descipcion','Marca','Modelo','NumeroSeriePlaca','CostoFin','Adquisicion','Mejoras',
         'RetirosBajas','Otros','ValorHistorico','AjusteInflacion','ValorAjustado'
         ,'CostoNetoIni','FecAdquisicion','FecInicio','Metodo','NroDoc','PorcDepreciacion','DepreAcumulada','DepreEjercicio','DepreRelacionada','DepreOtros'
         ,'DepreHistorico','DepreAjusInflacion','DepreAcuInflacion','CostoHistorico','DepreAcuTributaria','CostoNetoIniTributaria','DepreEjercicioTributaria'
-        ,'FecBaja','created_at','updated_at','RATIO','DEPRESIACION','DEPRESIACION_VALIDADA','ANALISISn1','ANALISISn2','OPCIONES'];
+        ,'FecBaja','RATIO','DEPRESIACION','DEPRESIACION_VALIDADA','ANALISISn1','ANALISISn2','OPCIONES'];
 		creartablaone(formdata,'#cargafiltroactivos','table table-bordered table-responsive','tablaactivos','#divactivostable','/Activos/Filtrar',cabecera,columnas,true,confirmartabla,botonescompras);
 	});
 }

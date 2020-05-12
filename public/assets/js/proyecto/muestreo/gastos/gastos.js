@@ -3,6 +3,19 @@ eventosgastos();
 var datagastos = '';
 
 function eventosgastos(){
+	$('#formeliminardata').submit(function(e){
+		e.preventDefault();
+		function confirmar(data) {
+			crearselect('#usoarchivoselect',data)
+		}
+		let formdata = new FormData(e.target);
+		ejecutarruta(formdata,'/Muestreo/Compras/Destroy',confirmar);
+	});
+	$('#usoarchivoselect').change(function(e){
+		let idarchivo = e.target.value;
+		asignarvalor('#idarchivogastos',idarchivo);
+		console.log(idarchivo);
+	});
 	$('#gastosfile').change(function(e){
 		let filename = this.files[0].name;
 		let filelabel = document.querySelector('#gastoslabel');
@@ -16,7 +29,7 @@ function eventosgastos(){
 			asignarvalor('#idarchivogastos',idarchivo);
 			console.log(idarchivo);
 		}
-		cargararchivo('#formcargagastos','#cargagastosfile','/ImportarExcelVentas',setarchivogastos);
+		cargararchivo('#formcargagastos','#cargagastosfile','/ImportarExcelGastos',setarchivogastos);
 	});
 	$('#formfiltrogastos').submit(function(event){
 		event.preventDefault();
@@ -31,54 +44,23 @@ function eventosgastos(){
 		let form = document.querySelector('#formfiltrogastos');
 		let formdata = new FormData(form);
 		let cabecera = [
-			'NroDoc','cliente','IdUso','IdArchivo','Periodo','Correlativo',
-			'FecEmision','FecVenci','TipoComp','NumSerie','AnoDua','NumComp',
-			'NumTicket','TipoDoc','BIAG1','IGVIPM1','BIAG2','IGVIPM2','BIAG3',
-			'AdqGrava','IGVIPM3','AdqGrava','ISC','Otros','Total','Moneda',
-			'TipoCam','FecOrigenMod','TipoCompMod','NumSerieMod','AnoDuaMod',
-			'NumSerComOriMod','FecConstDetrac','NumConstDetrac','Retencion','ClasifBi',
-			'Contrato','ErrorT1','ErrorT2','ErrorT3','ErrorT4','MedioPago','Estado','Opciones'
+			'Periodo','CUO','AMC','cuenta','Unid_Econ','CentroCosto',
+			'Moneda','TipoDoc1','Numero','TipoDoc2','NumSerie','NumComp',
+			'FecEmision','FecVenci','FecOperacion',	'Glosa1','Glosa2',
+			'Debe','Haber','RefenciaCompraVenta','IndOP','Diferenciar','Opciones'
 		];
 		let columnas = [
-			'NroDoc','cliente','IdUso','IdArchivo','Periodo','Correlativo',
-			'FecEmision','FecVenci','TipoComp','NumSerie','AnoDua','NumComp',
-			'NumTicket','TipoDoc','BIAG1','IGVIPM1','BIAG2','IGVIPM2','BIAG3',
-			'AdqGrava','IGVIPM3','AdqGrava','ISC','Otros','Total','Moneda',
-			'TipoCam','FecOrigenMod','TipoCompMod','NumSerieMod','AnoDuaMod',
-			'NumSerComOriMod','FecConstDetrac','NumConstDetrac','Retencion','ClasifBi',
-			'Contrato','ErrorT1','ErrorT2','ErrorT3','ErrorT4','MedioPago','Estado'
+			'Periodo','CUO','AMC','cuenta','Unid_Econ','CentroCosto',
+			'Moneda','TipoDoc1','Numero','TipoDoc2','NumSerie','NumComp',
+			'FecEmision','FecVenci','FecOperacion',	'Glosa1','Glosa2',
+			'Debe','Haber','RefenciaCompraVenta','IndOP','Diferenciar'
 		];
-		creartablaone(formdata,'#cargafiltrogastos','table table-bordered table-responsive','tablagastos','#divgastostable','/FiltrarExcelGastos',cabecera,columnas,true,confirmartabla,botonesgastos);
-	});
-	$('#btn-exportar-mayorgastos').click(function(e){
-		exportarmayorgastos();
+		creartablatwo(formdata,'#cargafiltrogastos','table table-bordered table-responsive','tablagastos','#divgastostable','/FiltrarExcelGastos',cabecera,columnas,true,confirmartabla,botonesgastos);
 	});
 }
 
 function confirmartabla(hola) {
 	datagastos = hola;
 	console.log('tabla cargada');
-}
-
-function exportarmayorgastos() {
-	console.log(JSON.stringify(datagastos));
-	console.log(datagastos);
-	var formdata = new FormData();
-	formdata.set('data',JSON.stringify(datagastos));
-	$.ajax({
-		url: '/ExportExcelGastos',
-		type: 'POST',
-		data: formdata,
-		processData: false,
-		contentType: false,
-		success: function(data){
-			console.log(data)
-			/*let link = document.createElement('a');
-			link.setAttribute('href',data);
-			link.click();*/
-		}
-	}).done(function(){
-		
-	});
-}
+}	
  

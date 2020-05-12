@@ -19,6 +19,9 @@ function muestreochildviews() {
 }
 
 function loadmodule()   {
+    $('#nav-reporte').click(function(e){
+        getview('#content','/Reporte',muestreochildviews);
+    });
     $('#nav-validador').click(function(e){
         getview('#content','/Validador',muestreochildviews);
     });

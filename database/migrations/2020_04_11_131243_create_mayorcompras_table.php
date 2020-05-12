@@ -19,6 +19,7 @@ class CreateMayorcomprasTable extends Migration
             $table->string('IdArchivo')->nullable();
             $table->string('Periodo')->nullable();
             $table->string('Correlativo')->nullable();
+            $table->string('Orden')->nullable();
             $table->string('FecEmision')->nullable();
             $table->string('FecVenci')->nullable();
             $table->string('TipoComp')->nullable();

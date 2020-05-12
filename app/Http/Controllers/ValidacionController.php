@@ -39,6 +39,8 @@ class ValidacionController extends Controller
         //return $rules2[0]->name; 
         $data = Validacion::importar($request->file('myfile'),'|',$rules);
        
+        session(['datavalidada' => $data]);
+
         return $data;
         //return $data;
     }

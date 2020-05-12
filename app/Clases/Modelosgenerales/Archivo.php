@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Archivo extends Model
 {
     protected $fillable = [
-        'ruta','user_id','uso_id'
+        'ruta','tipo','user_id','uso_id'
     ];
 
     public function post()

@@ -15,7 +15,6 @@ function validacionbasica(id,flag,msg,limit) {
             const msg = input.nextElementSibling;
             if(input.value == '')
             {
-                
                 if(msg.classList.contains('fade'))
                 {
                     msg.classList.remove('fade');
@@ -25,7 +24,6 @@ function validacionbasica(id,flag,msg,limit) {
                     input.classList.add('border-danger');
                 }
             } else {
-                
                 if(!msg.classList.contains('fade'))
                 {
                     input.classList.add('fade');
@@ -396,22 +394,24 @@ function cargararchivo(form,spinner,ruta,funcion) {
     return resultado;
 }
 
-function ejecutarruta(ruta) {
+function ejecutarruta(formdata,ruta,funcion) {
     event.preventDefault();
+    var resultado;
 	$.ajax({
 		url: ruta,
 		type: 'POST',
-		data: formData,
+		data: formdata,
 		processData: false,
 		contentType: false,
 		success: function(data){
-			
+			resultado = data;
 		}
 	}).done(function(){
+        funcion(resultado);
 	});
 }
 
-function eliminarregistro(ruta,id,funcion) {
+function cambiarregistro(ruta,id,funcion) {
     let formdata = new FormData();
     formdata.append('id',id);
     event.preventDefault();
@@ -428,4 +428,13 @@ function eliminarregistro(ruta,id,funcion) {
 	}).done(function(){
         funcion(resultado);
 	});
+}
+
+function cambiarclase(tag,target,clase)
+{
+    if(tag.classList.contains(target))
+    {
+        tag.classList.remove(target);
+        tag.classList.add(clase);
+    }
 }

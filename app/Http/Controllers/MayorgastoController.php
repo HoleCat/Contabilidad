@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Clases\Almacenamiento;
 use App\Clases\Modelosgenerales\Archivo;
+use App\Clases\Uso;
 use App\Formatos\Excelmuestreo;
-use App\Imports\MayorcomprasImport;
 use App\Imports\MayorgastosImport;
 use App\Mayorgasto;
 use Illuminate\Http\Request;
@@ -22,9 +22,70 @@ class MayorgastoController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function Index()
     {
-        //
+        if(Auth::check()){
+            $tipo = 9;
+            $tiposubuso = 12;
+            $uso_id = 0;
+            $idusuario = Auth::user()->id;
+            $contadorusomuestreo = DB::table('usos')->where('idusuario','=',$idusuario)->where('idtipo','=',$tipo)->count();
+            $contadorarchivos = DB::table('archivos')->where('user_id','=',$idusuario)->count();
+            $comprobantes = DB::table('comprobantes')->orderBy('codigo','asc')->get();
+            if($contadorusomuestreo > 0)
+            {
+                $uso = DB::table('usos')
+                ->where('idusuario','=',$idusuario)
+                ->where('idtipo','=',$tipo)
+                ->latest()
+                ->first();
+    
+                $uso_id = $uso->id;
+                
+                $contadorusogastos = DB::table('usos')->where('uso_id','=',$uso_id)->where('idusuario','=',$idusuario)->where('idtipo','=',$tiposubuso)->count();
+                
+                if($contadorusogastos>0)
+                {
+                    $usogastos = DB::table('usos')
+                    ->where('idusuario','=',$idusuario)
+                    ->where('uso_id','=',$uso_id)
+                    ->where('idtipo','=',$tiposubuso)
+                    ->latest()
+                    ->first();
+                    $archivos = DB::table('archivos')->where('uso_id','=',$usogastos->id)->get();
+                    return view('modules.muestreo.gastos',['archivos'=>$archivos,'uso' => $usogastos,'comprobantes' => $comprobantes]);
+                } else {
+    
+                    $usogastos = new Uso([
+                        'idusuario' => $idusuario,
+                        'uso_id' => $uso_id,
+                        'referencia' => 'Ejemplo de referencia gastos',
+                        'idtipo' => $tiposubuso,
+                    ]);
+                    $usogastos->save();
+                    $archivos = DB::table('archivos')->where('uso_id','=',$usogastos->id)->get();    
+                    return view('modules.muestreo.gastos',['archivos'=>$archivos,'uso' => $usogastos,'comprobantes' => $comprobantes]);
+                }
+                
+            } else {
+                $uso = new Uso();
+                $uso->idusuario = $idusuario;
+                $uso->uso_id = 0;
+                $uso->referencia = 'Ejemplo de referencia';
+                $uso->idtipo = $tipo;
+                $uso->save();
+    
+                $usogastos = new Uso([
+                    'idusuario' => $idusuario,
+                    'uso_id' => $uso->id,
+                    'referencia' => 'Ejemplo de referencia gastos sin uso general',
+                    'idtipo' => $tiposubuso,
+                ]);
+                $usogastos->save();
+                $archivos = DB::table('archivos')->where('uso_id','=',$usogastos->id)->get();    
+                return view('modules.muestreo.gastos',['archivos'=>$archivos,'uso' => $usogastos,'comprobantes' => $comprobantes]);
+            }
+        }
     }
 
     /**
@@ -93,30 +154,48 @@ class MayorgastoController extends Controller
         //
     }
 
-    public function exportar() 
+    public function exportar(Request $request) 
     {
-        $json_data = session('dataventas');
+        $json_data = session('datagastos');
 
-        $cell_order_ventas = array("A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z","AA","AB","AC","AD","AE","AF","AG","AH","AI","AJ","AK","AL","AM","AN","AO","AP");
+        $cell_order_gastos = array("A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V");
+        $columnas = [
+			'Periodo','CUO','AMC','cuenta','Unid_Econ','CentroCosto',
+			'Moneda','TipoDoc1','Numero','TipoDoc2','NumSerie','NumComp',
+			'FecEmision','FecVenci','FecOperacion',	'Glosa1','Glosa2',
+			'Debe','Haber','RefenciaCompraVenta','IndOP','Diferenciar'
+		];
 
         $user_id = Auth::user()->id;
         $username = Auth::user()->name;
         
-        $ruta = public_path('/assets/files/templatemayorventas.xlsx');
+        $ruta = public_path('/assets/files/templatemayorgasto.xlsx');
 
         //$array_data = json_decode($json_data, true);
         $array_data = $json_data;
         $spreadsheet = IOFactory::load($ruta);
     
-        $cont_1 = 2;
+        $cont_1 = 6;
+
+        $spreadsheet->setActiveSheetIndex(0)->setCellValue('B1', $request->empresa);
+        $spreadsheet->setActiveSheetIndex(0)->setCellValue('B2', $request->ruc);
+        $spreadsheet->setActiveSheetIndex(0)->setCellValue('B3', $request->periodo);
     
-        foreach ($array_data as $item) {
+        for ($f = 0; $f < count($array_data); $f++) {
             $cont_2 = 0;
-            foreach ($item as $cell_value) {
-                $cell_id = $cell_order_ventas[$cont_2].$cont_1;
+            $item = $array_data[$f];
+            $data = json_decode($item->data);
+            for ($i=0; $i < count($columnas); $i++) { 
+                $cell_id = $cell_order_gastos[$cont_2].$cont_1;
+                $cell_value = $data->{$columnas[$i]};
                 $spreadsheet->setActiveSheetIndex(0)->setCellValue($cell_id, $cell_value);
                 $cont_2++;
             }
+            //foreach ($item['data'] as $cell_value) {
+            //    $cell_id = $cell_order_compras[$cont_2].$cont_1;
+            //    $spreadsheet->setActiveSheetIndex(0)->setCellValue($cell_id, $cell_value);
+            //    $cont_2++;
+            //}
             $cont_1++;
         }
 
@@ -146,18 +225,20 @@ class MayorgastoController extends Controller
         $useremail = Auth::user()->email;
         $uso_id = $request->input('iduso');
         
+        $nombre = $request->nombrearchivo;
+
         if($request->hasfile('myfile')){
-            $ruta = Almacenamiento::guardarmuestrascompras($username,$request->file('myfile'));
+            $ruta = Almacenamiento::guardartemporalmente($username,$request->file('myfile'));
             $archivo = new Archivo();
             $archivo->user_id = $user_id;
             $archivo->uso_id = $uso_id;
-            $archivo->ruta = $ruta;
+            $archivo->ruta = $nombre;
             $archivo->save();
             $id_archivo = $archivo->id;
 
             Excelmuestreo::aumentarcolumnasdefault($ruta,$uso_id,$id_archivo);
         
-            Excel::import(new MayorcomprasImport, $ruta);
+            Excel::import(new MayorgastosImport, $ruta);
 
             Storage::deleteDirectory('public/'.$useremail.'/temporal', true);
             // sleep 1 second because of race condition with HD
@@ -179,9 +260,9 @@ class MayorgastoController extends Controller
         $tipo = $request->input('tipocomprobante');
         $cantidad = $request->input('cantidad');
         
-        $reporte = DB::select('call report_xl_gastos(?, ?, ?, ?, ?, ?, ?)',[$impMin,$impMax,$cantidad,$comparacion,$tipo,$uso_id,$id_archivo]);
+        $reporte = DB::select('call report_xl_gastos(?, ?, ?, ?, ?, ?)',[$impMin,$impMax,$cantidad,$comparacion,$uso_id,$id_archivo]);
         
-        session(['dataventas' => $reporte]);
+        session(['datagastos' => $reporte]);
 
         return response()->json($reporte,200);                
     }

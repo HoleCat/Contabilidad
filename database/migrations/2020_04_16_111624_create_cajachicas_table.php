@@ -22,6 +22,7 @@ class CreateCajachicasTable extends Migration
             $table->integer('documento');
             $table->date('fecha');
             $table->double('moneda');
+            $table->double('cambio');
             $table->string('concepto');
             $table->integer('contabilidad');
             $table->string('centrocosto');
