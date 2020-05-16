@@ -104,3 +104,37 @@
         min-height: 400px !important;
     }
 }
+
+.bg-general {
+    background-color: #f7f1ba;
+}
+
+.bg-navlink {
+    background-color: #5f93bd !important;
+    border: 0px !important;
+    color: white !important;
+}
+
+.bg-navlink:focus {
+    background-color: #1c3346 !important;
+    border: 0px !important;
+    color: white !important;
+}
+
+.bg-navlink.active {
+    background-color: #1c3346 !important;
+    border: 0px !important;
+    color: white !important;
+}
+
+.bg-navlink:active {
+    background-color: #1c3346 !important;
+    border: 0px !important;
+    color: white !important;
+}
+
+.bg-navlink:hover {
+    background-color: #1c3346 !important;
+    border: 0px !important;
+    color: white !important;
+}

@@ -88,7 +88,7 @@
     <div class="jumbotron col-12 text-left py-3">
         <h5>3. Exportar resultado</h5>
         <form action="/ExportarExcelVentas" method="GET">
-            <div class="col-xl-6 col-md-6 col-sm-8 col-xs-12">
+            <div class="px-0 col-xl-6 col-md-6 col-sm-8 col-xs-12">
                 <div class="form-group">
                     <input class="form-control" type="text" name="empresa" placeholder="EMPRESA">
                 </div>

@@ -115,17 +115,31 @@
             </div>
         </div>
     </div>
-    <div class="jumbotron col-12 text-left py-3">
-        <h5>3. Generar TXT para consulta RUC :</h5>
-        <form class="my-2" action="/Reporte/Compras/Txtconsultaruc" method="GET">
-            <input id="uso_id" type="hidden" name="iduso" value="{{$uso->id}}">
-            <button type="submit" class="btn btn-info">DESCARGAR</button>
-        </form>
-        <h5>4. Generar TXT para consultar comprobantes :</h5>
-        <form class="my-2" action="/Reporte/Compras/Txtcomprobantes" method="GET">
-            <input id="uso_id" type="hidden" name="iduso" value="{{$uso->id}}">
-            <button type="submit" class="btn btn-info">DESCARGAR</button>
-        </form>
+    <div class="jumbotron col-12 text-left py-3 d-flex flex-wrap">
+        <div class="px-0 py-3 col-sm-12 col-xs-12">
+            <div class="col-sm-6 col-xs-12">
+                <h5>3. Generar TXT para consulta RUC :</h5>
+                <form class="my-2" id="formtxtconsultaruc" method="GET">
+                    <input id="uso_id" type="hidden" name="iduso" value="{{$uso->id}}">
+                    <button type="submit" class="btn btn-info">DESCARGAR</button>
+                </form>
+            </div>
+            <div class="col-sm-6 col-xs-12" id="zipsconsultaruc">
+                
+            </div>
+        </div>
+        <div class="px-0 py-3 col-sm-12 col-xs-12">
+            <div class="col-sm-6 col-xs-12">
+                <h5>4. Generar TXT para consultar comprobantes :</h5>
+                <form class="my-2" id="formtxtcomprobantes" method="GET">
+                    <input id="uso_id" type="hidden" name="iduso" value="{{$uso->id}}">
+                    <button type="submit" class="btn btn-info">DESCARGAR</button>
+                </form>
+            </div>
+            <div class="col-sm-6 col-xs-12" id="zipscomprobantes">
+                
+            </div>
+        </div>
     </div>
     
     <div class="jumbotron col-12 text-left py-3">

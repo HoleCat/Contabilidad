@@ -22,11 +22,7 @@ use ZipArchive;
 
 class ReporteComprasController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+
     public function index()
     {
         $tipo = 21;
@@ -164,8 +160,8 @@ class ReporteComprasController extends Controller
             }
 
             $validacion = DB::table('validacion_reporte_compras')
-            ->join('detraccion_compras', 'detraccion_compras.NumeroComprobante', '=', 'validacion_reporte_compras.Numcomp')
-            ->join('d_t_r_s', 'detraccion_compras.TipoBien', '=', 'd_t_r_s.COD')
+            ->leftjoin('detraccion_compras', 'detraccion_compras.NumeroComprobante', '=', 'validacion_reporte_compras.Numcomp')
+            ->leftjoin('d_t_r_s', 'detraccion_compras.TipoBien', '=', 'd_t_r_s.COD')
             ->select('validacion_reporte_compras.id as IdCool','validacion_reporte_compras.*','detraccion_compras.*','d_t_r_s.*')
             ->where('validacion_reporte_compras.iduso','=',$request->iduso)->get();
 
@@ -275,7 +271,7 @@ class ReporteComprasController extends Controller
             $detracciones = Archivo::where('uso_id','=',$uso_id)->where('tipo','=','detraccion')->get();
 
             $dtr = DB::table('detraccion_compras')
-            ->join('d_t_r_s', 'detraccion_compras.TipoBien', '=', 'd_t_r_s.COD')
+            ->leftjoin('d_t_r_s', 'detraccion_compras.TipoBien', '=', 'd_t_r_s.COD')
             ->select('detraccion_compras.*', 'd_t_r_s.*')
             ->where('iduso','=',$request->iduso)->get();
 
@@ -286,7 +282,7 @@ class ReporteComprasController extends Controller
         else 
         {
             $dtr = DB::table('detraccion_compras')
-            ->join('d_t_r_s', 'detraccion_compras.TipoBien', '=', 'd_t_r_s.MCOD')
+            ->leftjoin('d_t_r_s', 'detraccion_compras.TipoBien', '=', 'd_t_r_s.MCOD')
             ->select('detraccion_compras.*', 'd_t_r_s.*')
             ->where('iduso','=',$request->iduso)->get();
 
@@ -359,15 +355,15 @@ class ReporteComprasController extends Controller
         $detracciones = Archivo::where('uso_id','=',$request->iduso)->where('tipo','=','detraccion')->get();
 
         $dtr = DB::table('detraccion_compras')
-        ->join('d_t_r_s', 'detraccion_compras.TipoBien', '=', 'd_t_r_s.COD')
+        ->leftjoin('d_t_r_s', 'detraccion_compras.TipoBien', '=', 'd_t_r_s.COD')
         ->select('detraccion_compras.*', 'd_t_r_s.*')
         ->where('iduso','=',$request->iduso)->get();
 
         if(count($dtr)>0)
         {
             $validacion = DB::table('validacion_reporte_compras')
-            ->join('detraccion_compras', 'detraccion_compras.NumeroComprobante', '=', 'validacion_reporte_compras.Numcomp')
-            ->join('d_t_r_s', 'detraccion_compras.TipoBien', '=', 'd_t_r_s.COD')
+            ->leftjoin('detraccion_compras', 'detraccion_compras.NumeroComprobante', '=', 'validacion_reporte_compras.Numcomp')
+            ->leftjoin('d_t_r_s', 'detraccion_compras.TipoBien', '=', 'd_t_r_s.COD')
             ->select('validacion_reporte_compras.id as IdCool','validacion_reporte_compras.*','detraccion_compras.*','d_t_r_s.*')
             ->where('validacion_reporte_compras.iduso','=',$request->iduso)->get();
             return ['detracciones'=>$detracciones,'compras'=>$compras,'dtr'=>$dtr,'validacion'=>$validacion];
@@ -375,16 +371,15 @@ class ReporteComprasController extends Controller
         else 
         {
             $dtr = DB::table('detraccion_compras')
-            ->join('d_t_r_s', 'detraccion_compras.TipoBien', '=', 'd_t_r_s.MCOD')
+            ->leftjoin('d_t_r_s', 'detraccion_compras.TipoBien', '=', 'd_t_r_s.MCOD')
             ->select('detraccion_compras.*', 'd_t_r_s.*')
             ->where('iduso','=',$request->iduso)->get();
 
             $validacion = DB::table('validacion_reporte_compras')
-            ->join('detraccion_compras', 'detraccion_compras.NumeroComprobante', '=', 'validacion_reporte_compras.Numcomp')
-            ->join('d_t_r_s', 'detraccion_compras.TipoBien', '=', 'd_t_r_s.COD')
+            ->leftjoin('detraccion_compras', 'detraccion_compras.NumeroComprobante', '=', 'validacion_reporte_compras.Numcomp')
+            ->leftjoin('d_t_r_s', 'detraccion_compras.TipoBien', '=', 'd_t_r_s.COD')
             ->select('validacion_reporte_compras.id as IdCool','validacion_reporte_compras.*','detraccion_compras.*','d_t_r_s.*')
             ->where('validacion_reporte_compras.iduso','=',$request->iduso)->get();
-
             return ['detracciones'=>$detracciones,'compras'=>$compras,'dtr'=>$dtr,'validacion'=>$validacion];
         }      
 
@@ -414,108 +409,202 @@ class ReporteComprasController extends Controller
      * @param  \App\Clases\Reporte\ReporteCompras  $reporteCompras
      * @return \Illuminate\Http\Response
      */
+    
     public function Txtconsultaruc(Request $request)
     {
+        //1. CONTENIDO
         $user = Auth::user();
-        $ruta = public_path('\\'.$user->email.'\\temporal\\');
-        $namefile = $ruta."txtconsultaruc.txt";
-        $namefile = "D:\Contabilidad/AppContador/public/jorge.hospinal@yahoo.com/temporal/txtconsultaruc.txt";
         
+        $data = DB::table('validacion_reporte_compras')
+            ->leftjoin('detraccion_compras', 'detraccion_compras.NumeroComprobante', '=', 'validacion_reporte_compras.Numcomp')
+            ->leftjoin('d_t_r_s', 'detraccion_compras.TipoBien', '=', 'd_t_r_s.COD')
+            ->select('validacion_reporte_compras.id as IdCool','validacion_reporte_compras.*','detraccion_compras.*','d_t_r_s.*')
+            ->where('validacion_reporte_compras.iduso','=',$request->iduso)
+            ->get();
+
         $content = "";
-        $data = ValidacionReporteCompras::where('IdUso','=',$request->iduso)->where('Status','=','no')->get();
-        //save file
-        $file = fopen($namefile, "a") or die("Unable to open file!");
-        return $file;
-        $content = "";
-        for ($i=0; $i < count($data); $i++) { 
-            $element = $data[$i];
-            $content = $content.$element['NroDoc']."|".$element['TipoComp']."|".$element['NumSerie']."|".$element['NumComp']."|".$element['FecEmision']."|".$element['Total']."\n";
+        
+        //2. ESPACIO
+
+        $path = public_path('storage\\ZIP\\'.$user->email.'\\temporal\\');
+
+        if(!File::isDirectory($path)){
+
+            File::makeDirectory($path, 0777, true, true);
+
+        } else 
+        {
+            File::deleteDirectory($path);
+            File::makeDirectory($path, 0777, true, true);
         }
-        fputs($file, $content);
-        fclose($file);
 
-        /*$zip = new ZipArchive;
-        if ($zip->open($namefile, ZipArchive::CREATE) === TRUE)
-        {
-            $files = File::files(public_path('myFiles'));
-   
-            foreach ($files as $key => $value) {
-                $relativeNameInZipFile = basename($value);
-                $zip->addFile($value, $relativeNameInZipFile);
-            }
-             
-            $zip->close();
-        }*/
-        //header download
-        header("Content-Disposition: attachment; filename=\"" . $namefile . "\"");
-        header("Content-Type: application/force-download");
-        header('Expires: 0');
-        header('Cache-Control: must-revalidate');
-        header('Pragma: public');
-        header("Content-Type: text/plain");
-
-        return $content;
-    }
-
-    public function ResultadoConsultaRuc(Request $request)
-    {
-        if(Auth::check())
-        {
-            if($request->hasFile('myfile'))
+        //3. ARCHIVOS
+        $guia = 0;
+        $guiazip = 0;
+        $archivos = [];
+        $cantidad = count($data);
+        
+        foreach ($data as $element) {
+            $guia = $guia + 1;
+            if($guia%100==0)
             {
-                $uso_id = $request->iduso;
-                $nombre = $request->nombrearchivo;
-                $user_id = Auth::user()->id;
-                $tipo = 'resultado ruc';
-
-                $archivo = new Archivo();
-                $archivo->user_id = $user_id;
-                $archivo->uso_id = $uso_id;
-                $archivo->ruta = $nombre;
-                $archivo->tipo = $tipo;
-                
-                $archivo->save();
-
-                $id_archivo = $archivo->id;
-
-
-                $file = $request->file('myfile');
+                $content = $content.$element->NroDoc."|".$element->TipoComp."|".$element->NumSerie."|".$element->NumComp."|".$element->FecEmision."|".$element->Total."\n";
+                array_push($archivos,$content);
+                $content = "";
+            }
+            else if($cantidad==$guia)
+            {
+                if($guia<100)
+                {
+                    $content = $content.$element->NroDoc."|".$element->TipoComp."|".$element->NumSerie."|".$element->NumComp."|".$element->FecEmision."|".$element->Total."\n";
+                    array_push($archivos,$content);
+                    $content = "";
+                }
+                if($guia>100)
+                {
+                    $content = $content.$element->NroDoc."|".$element->TipoComp."|".$element->NumSerie."|".$element->NumComp."|".$element->FecEmision."|".$element->Total."\n";
+                    array_push($archivos,$content);
+                    $content = "";
+                }
+            }
+            else
+            {
+                $content = $content.$element->NroDoc."|".$element->TipoComp."|".$element->NumSerie."|".$element->NumComp."|".$element->FecEmision."|".$element->Total."\n";
             }
         }
+        
+        $rutas = [];
+        for ($i=0; $i < count($archivos); $i++) { 
+            $guiazip = $guiazip + 1;
+            $content = $archivos[$i];
+            File::makeDirectory($path."zip".$guiazip."\\", 0777, true, true);
+            File::put($path."zip".$guiazip."\\zip".$guiazip.".txt", $content);
+            $ruta = $path."zip".$guiazip."\\";
+            array_push($rutas,$ruta);
+        }
+        
+        //return $rutas;
+        //3. ZIPEO
+        $pathzip = public_path("storage\\ZIP\\".$user->email."\\zips\\");
+
+        if(!File::isDirectory($pathzip)){
+
+            File::makeDirectory($pathzip, 0777, true, true);
+
+        } else 
+        {
+            File::deleteDirectory($pathzip);
+            File::makeDirectory($pathzip, 0777, true, true);
+        }
+
+        $resultado = [];
+        
+        for ($i=0; $i < count($rutas); $i++) { 
+            $pathdir = $rutas[$i];  
+            $zipcreated = public_path("storage\\ZIP\\".$user->email."\\zips\\zipruc".$i.".zip"); 
+            $ziptoken = Storage::url("ZIP/".$user->email."\\zips\\zipruc".$i.".zip");
+            $zip = new ZipArchive; 
+
+            if($zip -> open($zipcreated, ZipArchive::CREATE ) === TRUE) { 
+        
+                // Store the path into the variable 
+                $dir = opendir($pathdir); 
+                
+                while($file = readdir($dir)) { 
+                    if(is_file($pathdir.$file)) { 
+                        $zip -> addFile($pathdir.$file, $file); 
+                    } 
+                } 
+                $zip ->close(); 
+            }
+            $ruta = (object) array("ruta" => $ziptoken);
+            array_push($resultado,$ruta);
+        }
+        return view('herramientas.mantenedores.descargables',['resultados'=>$resultado]);
+        //return $resultado;
     }
 
+    public function openzipruc() {
+        $user = Auth::user();
+
+        $zipcreated = base_path('ZIP\\'.$user->email.'\\zipruc.zip'); 
+
+        $zip = new ZipArchive; 
+        
+        $zip->open($zipcreated); 
+  
+        // Extracts to current directory 
+        $zip->extractTo('./'); 
+        
+        $zip->close();  
+    }
+    
     public function Txtcomprobantes(Request $request)
     {
         //config
-        $namefile = "txtconsultacomprobantes.txt";
-        $content = "";
+        $user = Auth::user();
+        $path = public_path('storage\\ZIP\\'.$user->email.'\\comprobantes\\');
         $data = ValidacionReporteCompras::where('IdUso','=',$request->iduso)->where('Liberar','=','no')->get();
-        //save file
-        $file = fopen($namefile, "a") or die("Unable to open file!");
-        $content = "";
-        for ($i=0; $i < count($data); $i++) { 
-            $element = $data[$i];
-            $content = $content.$element['NroDoc']."|"."\n";
+        if(!File::isDirectory($path)){
+
+            File::makeDirectory($path, 0777, true, true);
+
+        } else 
+        {
+            File::deleteDirectory($path);
+            File::makeDirectory($path, 0777, true, true);
         }
-        fputs($file, $content);
-        fclose($file);
 
-        //header download
-        header("Content-Disposition: attachment; filename=\"" . $namefile . "\"");
-        header("Content-Type: application/force-download");
-        header('Expires: 0');
-        header('Cache-Control: must-revalidate');
-        header('Pragma: public');
-        header("Content-Type: text/plain");
+        $content = "";
+        $guia = 0;
+        $guiazip = 0;
+        $archivos = [];
+        $cantidad = count($data);
+        
+        foreach ($data as $element) {
+            $guia = $guia + 1;
+            if($guia%100==0)
+            {
+                $content = $content.$element->NroDoc."|"."\n";
+                array_push($archivos,$content);
+                $content = "";
+            }
+            else if($cantidad==$guia)
+            {
+                if($guia<100)
+                {
+                    $content = $content.$element->NroDoc."|"."\n";
+                    array_push($archivos,$content);
+                    $content = "";
+                }
+                if($guia>100)
+                {
+                    $content = $content.$element->NroDoc."|"."\n";
+                    array_push($archivos,$content);
+                    $content = "";
+                }
+            }
+            else
+            {
+                $content = $content.$element->NroDoc."|"."\n";
+            }
+        }
 
-        return $content;
+        $resultado = [];
+        for ($i=0; $i < count($archivos); $i++) { 
+            $guiazip = $guiazip + 1;
+            $content = $archivos[$i];
+            //File::makeDirectory($path."zip".$guiazip."\\", 0777, true, true);
+            File::put($path."\\zip".$guiazip.".txt", $content);
+            $filetoken = Storage::url("ZIP/".$user->email."\\comprobantes\\zip".$guiazip.".txt");
+            $ruta = (object) array("ruta" => $filetoken);
+            array_push($resultado,$ruta);
+        }
+
+        return view('herramientas.mantenedores.descargables',['resultados'=>$resultado]);
+
     }
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Clases\Reporte\ReporteCompras  $reporteCompras
-     * @return \Illuminate\Http\Response
-     */
+    
     public function Destroy(ReporteCompras $reporteCompras, Request $request)
     {
         DB::table('validacion_reporte_compras')->delete()->where('iduso','=',$request->iduso);

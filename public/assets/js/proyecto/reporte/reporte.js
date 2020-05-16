@@ -301,7 +301,9 @@ function eventosreporte(){
 		]
 		creartablafour('data',checks,formdata,'#cargareportecomprasfile','table table-bordered table-responsive','tablareporte1','#divreportecomprastable','/Reporte/Compras/Importar',cabecera,columnas,true,confirmartabla,botonesreporte);
 	});
-	$('#btn-exportar-mayorreporte').click(function(e){
-		exportarmayorreporte();
-	});
+	function confirmacion(data){
+		console.log('descargable configurado ..');
+	};
+	setviewcall('#formtxtconsultaruc','#zipsconsultaruc','/Reporte/Compras/Txtconsultaruc',confirmacion());
+	setviewcall('#formtxtcomprobantes','#zipscomprobantes','/Reporte/Compras/Txtcomprobantes',confirmacion());
 }

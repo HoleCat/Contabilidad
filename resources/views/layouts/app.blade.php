@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 @include('layouts.head')
-<body>
+<body class="bg-general">
     <div id="app">
         @include('layouts.nav')
         <div class="col-12 py-5"></div>
